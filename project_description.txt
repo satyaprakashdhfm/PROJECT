@@ -1,0 +1,196 @@
+# Wealthwise - Daily Expense Management Platform
+
+## Project Overview
+
+Wealthwise is a MERN stack-based web application that aims to provide a comprehensive daily expense management platform to its users. The application will be designed to cater to the needs of individuals who are looking for an efficient and easy-to-use solution to manage their daily expenses. The application will be of professional complexity, with a robust set of features and functionalities that will enable users to track their expenses, analyze their spending patterns, and make informed financial decisions.
+
+## Domain Context
+
+The financial services domain is one of the most critical areas that require proper management and tracking of expenses. Wealthwise aims to address this need by providing a comprehensive platform that allows users to manage their daily expenses efficiently. The application will be designed to be user-friendly, with an intuitive interface that enables users to quickly navigate through the various features and functionalities.
+
+## Core Features
+
+### Daily Expense Management
+The daily expense management feature of Wealthwise will enable users to track their expenses in real-time. Users can enter their expenses manually or import them from their bank accounts. The application will categorize expenses automatically, making it easier for users to analyze their spending patterns. Users can set budgets for different categories and receive alerts when they exceed their limits.
+
+### Dashboard & Visualization
+Wealthwise will also provide users with a dashboard that displays an overview of their expenses. The dashboard will include graphs and charts that enable users to visualize their spending patterns. Users can also view their expenses by category, date, and merchant. The application will also provide users with the option to export their expense data to Excel or PDF formats.
+
+### Technology Stack
+The MERN stack technology used in the development of Wealthwise will ensure that the application is fast, reliable, and scalable. The application will be built using MongoDB, Express, React, and Node.js. These technologies are known for their robustness, flexibility, and ease of use, making them an ideal choice for developing a complex financial services application like Wealthwise.
+
+### Advanced Features
+The professional complexity of Wealthwise will be reflected in its advanced features and functionalities. The application will provide users with the option to set financial goals and track their progress. Users can also create custom reports that provide insights into their spending patterns. The application will also include a budget planner that enables users to plan their expenses for the future.
+
+## Conclusion
+
+In conclusion, Wealthwise is a MERN stack-based web application that aims to provide a comprehensive daily expense management platform to its users. The application will be of professional complexity, with a robust set of features and functionalities that will enable users to track their expenses, analyze their spending patterns, and make informed financial decisions. With its user-friendly interface, advanced features, and scalable technology, Wealthwise will be an ideal solution for individuals looking to manage their daily expenses efficiently.
+
+---
+
+## Product Backlog
+
+### User Story 1: Account Creation and Authentication
+**Story Points:** 5
+
+**Description:** As a user, I should be able to create an account on Wealthwise and log in to the application.
+
+**Priority / MoSCoW parameters:**
+- **Must Have:** User authentication and authorization
+- **Should Have:** Option to reset password
+- **Should Have:** 
+- **Won't Have:**
+
+**Acceptance Criteria:**
+
+*Dos / Positive points:*
+1. User should be able to create an account with a valid email and password
+2. User should be able to log in to the application with valid credentials
+
+*Don'ts / Negative points:*
+1. User should not be able to create an account with an invalid email or password
+2. User should not be able to log in to the application with invalid credentials
+
+---
+
+### User Story 2: Manual Expense Entry
+**Story Points:** 3
+
+**Description:** As a user, I should be able to enter my daily expenses manually into the application.
+
+**Priority / MoSCoW parameters:**
+- **Must Have:** Expense tracking feature
+- **Should Have:** Option to categorize expenses
+- **Should Have:**
+- **Won't Have:**
+
+**Acceptance Criteria:**
+
+*Dos / Positive points:*
+1. User should be able to enter expense details such as amount, date, and description
+2. User should be able to categorize expenses
+
+*Don'ts / Negative points:*
+1. User should not be able to enter invalid expense details
+2. User should not be able to categorize expenses incorrectly
+
+---
+
+### User Story 3: Bank Account Import
+**Story Points:** 2
+
+**Description:** As a user, I should be able to import my expenses from my bank account into the application.
+
+**Priority / MoSCoW parameters:**
+- **Must Have:** Expense import feature
+- **Should Have:**
+- **Should Have:**
+- **Won't Have:**
+
+**Acceptance Criteria:**
+
+*Dos / Positive points:*
+1. User should be able to import expenses from their bank account
+2. Imported expenses should be automatically categorized
+
+*Don'ts / Negative points:*
+1. User should not be able to import invalid expenses
+2. Imported expenses should not be categorized incorrectly
+
+---
+
+### User Story 4: Budget Setting
+**Story Points:** 3
+
+**Description:** As a user, I should be able to set budgets for different expense categories.
+
+**Priority / MoSCoW parameters:**
+- **Must Have:** Budget setting feature
+- **Should Have:** Option to receive alerts when budget limits are exceeded
+- **Should Have:**
+- **Won't Have:**
+
+**Acceptance Criteria:**
+
+*Dos / Positive points:*
+1. User should be able to set budgets for different expense categories
+2. User should receive alerts when they exceed their budget limits
+
+*Don'ts / Negative points:*
+1. User should not be able to set invalid budgets
+2. User should not receive alerts for incorrect budget limits
+
+---
+
+### User Story 5: Expense Dashboard
+**Story Points:** 4
+
+**Description:** As a user, I should be able to view my expenses on a dashboard with graphs and charts.
+
+**Priority / MoSCoW parameters:**
+- **Must Have:** Dashboard feature
+- **Should Have:** Option to view expenses by category, date, and merchant
+- **Should Have:**
+- **Won't Have:**
+
+**Acceptance Criteria:**
+
+*Dos / Positive points:*
+1. User should be able to view their expenses on a dashboard with graphs and charts
+2. User should be able to view expenses by category, date, and merchant
+
+*Don'ts / Negative points:*
+1. User should not be able to view incorrect expense data on the dashboard
+2. User should not be able to view expenses by incorrect categories, dates, or merchants
+
+---
+
+### User Story 6: Data Export
+**Story Points:** 2
+
+**Description:** As a user, I should be able to export my expense data to Excel or PDF formats.
+
+**Priority / MoSCoW parameters:**
+- **Must Have:** Expense data export feature
+- **Should Have:**
+- **Should Have:**
+- **Won't Have:**
+
+**Acceptance Criteria:**
+
+*Dos / Positive points:*
+1. User should be able to export their expense data to Excel or PDF formats
+2. Exported data should be accurate and complete
+
+*Don'ts / Negative points:*
+1. User should not be able to export invalid or incomplete expense data
+2. Exported data should not contain incorrect or incomplete information
+
+---
+
+### User Story 7: Financial Goals & Progress Tracking
+**Story Points:** 5
+
+**Description:** As a user, I should be able to set financial goals and track my progress.
+
+**Priority / MoSCoW parameters:**
+- **Must Have:** Financial goal setting feature
+- **Should Have:** Option to create custom reports that provide insights into my spending patterns
+- **Should Have:** Budget planner feature
+- **Won't Have:**
+
+**Acceptance Criteria:**
+
+*Dos / Positive points:*
+1. User should be able to set financial goals and track their progress
+2. User should be able to create custom reports that provide insights into their spending patterns
+3. User should be able to plan their expenses for the future using the budget planner feature
+
+*Don'ts / Negative points:*
+1. User should not be able to set invalid financial goals
+2. User should not receive incorrect insights into their spending patterns
+3. User should not be able to plan expenses incorrectly
+
+---
+
+## Total Story Points: 24

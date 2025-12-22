@@ -15,12 +15,12 @@ const expenseSchema = new moongoose.Schema(
             type:Date,
             required:true
         },
-        description:{
+        category:{
             type:String,
             required:true,
             enum:["Food","Travel","Shopping","Bills","Other"]
         },
-        category:{
+        description:{
             type:String,
             required:true
         }

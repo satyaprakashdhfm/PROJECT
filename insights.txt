@@ -1,0 +1,79 @@
+EXCEL IMPORT IMPLEMENTATION INSIGHTS
+Date: 23-12-2025
+Project: Wealthwise
+
+================================================================================
+INSIGHT 1: FRONTEND vs BACKEND EXCEL PARSING
+================================================================================
+
+DECISION: Frontend Parsing (Chosen for MVP)
+
+---
+
+FRONTEND PARSING (CHOSEN) ✅
+- User uploads Excel → Browser parses to JSON → Send to backend
+- Pros: Works immediately, no npm install issues, instant preview, lighter server
+- Cons: Browser memory limits, less secure, code duplication for mobile
+- Use when: MVP/prototype, office restrictions, small files (<5k rows)
+
+BACKEND PARSING (Industry Standard)
+- User uploads Excel → Server receives file → Server parses → Validates → DB
+- Pros: More secure, handles large files, centralized logic, audit trail
+- Cons: Needs multer package, slower UX, more server processing
+- Use when: Production, large files, compliance needed, enterprise apps
+
+---
+
+COMPARISON
+Frontend: Fast ✅ | Simple ✅ | Office-friendly ✅ | Works now ✅
+Backend: Secure ✅ | Scalable ✅ | Professional ✅ | Standard ✅
+
+RECOMMENDATION: Start with frontend, upgrade to backend for production
+
+---
+
+BACKEND IMPLEMENTATION
+Endpoint: POST /api/v1/import/bank
+Expected format: {transactions: [{date, amount, description, merchant}]}
+Validations: Amount (positive number), Date (valid format), Description (3-200 chars)
+Response: {imported: count, failed: count, expenses: [], errors: []}
+
+Changes made:
+✅ Added merchant field support
+✅ Amount/date/description validation
+✅ Per-row error handling
+✅ Auto-categorization enabled
+
+---
+
+FRONTEND SAMPLE CODE
+```javascript
+import * as XLSX from 'xlsx';
+
+const handleExcel = (file) => {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const workbook = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
+    const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+    
+    const transactions = json.map(row => ({
+      date: row.Date,
+      amount: row.Amount,
+      description: row.Description,
+      merchant: row.Merchant
+    }));
+    
+    fetch('/api/v1/import/bank', {
+      method: 'POST',
+      headers: {'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json'},
+      body: JSON.stringify({transactions})
+    });
+  };
+  reader.readAsArrayBuffer(file);
+};
+```
+
+Excel Format: | Date | Amount | Description | Merchant |
+
+Security: Backend validates everything regardless of parsing location ✅
+

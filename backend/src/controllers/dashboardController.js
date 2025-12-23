@@ -5,6 +5,7 @@
  * Features:
  * - getSummary() - Get complete dashboard data including total expenses, expenses by category, 
  *                  expenses by month, recent expenses, budget comparison, and statistics
+ *                  Supports filtering by category, date range, and merchant
  */
 
 const Expense = require('../model/Expense')
@@ -13,7 +14,19 @@ const Budget = require('../model/Budget')
 exports.getSummary = async(req,res) => {
     try{
         const userId = req.user.id
-        const expenses = await Expense.find({user:userId}).sort({date: -1});
+        const {category, startDate, endDate, merchant} = req.query
+        
+        let filter = {user: userId}
+        
+        if(category) filter.category = category
+        if(merchant) filter.merchant = new RegExp(merchant, 'i')
+        if(startDate || endDate){
+            filter.date = {}
+            if(startDate) filter.date.$gte = new Date(startDate)
+            if(endDate) filter.date.$lte = new Date(endDate)
+        }
+        
+        const expenses = await Expense.find(filter).sort({date: -1});
         const budgets = await Budget.find({userId});
 
         // Calculate total expenses

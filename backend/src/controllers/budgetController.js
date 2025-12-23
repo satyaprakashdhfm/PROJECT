@@ -7,9 +7,11 @@
  * - getBudgets() - Fetch all user budgets
  * - getBudgetByCategory() - Get specific budget by category
  * - deleteBudget() - Remove a budget
+ * - getBudgetPlanner() - Plan future budgets and compare with past spending patterns
  */
 
 const Budget = require('../model/Budget')
+const Expense = require('../model/Expense')
 
 const setBudget = async(req,res)=>{
     const {category,budget_amount} = req.body
@@ -96,4 +98,49 @@ const deleteBudget = async(req,res)=>{
     }
 }
 
-module.exports = {setBudget, getBudgets, getBudgetByCategory, deleteBudget}
+const getBudgetPlanner = async(req,res)=>{
+    try{
+        const budgets = await Budget.find({userId: req.user.id})
+        const expenses = await Expense.find({user: req.user.id})
+        
+        // Calculate past 3 months average spending per category
+        const threeMonthsAgo = new Date()
+        threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
+        
+        const recentExpenses = expenses.filter(exp => new Date(exp.date) >= threeMonthsAgo)
+        
+        const categorySpending = {}
+        recentExpenses.forEach(exp => {
+            if(!categorySpending[exp.category]) categorySpending[exp.category] = 0
+            categorySpending[exp.category] += exp.amount
+        })
+        
+        // Calculate monthly average and project for next month
+        const monthCount = 3
+        const plannerData = budgets.map(budget => {
+            const pastAverage = (categorySpending[budget.category] || 0) / monthCount
+            const projectedNextMonth = pastAverage
+            const recommendedBudget = Math.ceil(pastAverage * 1.1) // 10% buffer
+            
+            return {
+                category: budget.category,
+                currentBudget: budget.budget_amount,
+                pastMonthlyAverage: pastAverage.toFixed(2),
+                projectedNextMonth: projectedNextMonth.toFixed(2),
+                recommendedBudget,
+                difference: (budget.budget_amount - recommendedBudget).toFixed(2),
+                status: budget.budget_amount >= recommendedBudget ? "adequate" : "insufficient"
+            }
+        })
+        
+        res.status(200).json({
+            message: "Budget planner data fetched successfully",
+            data: plannerData
+        })
+    }
+    catch(error){
+        res.status(500).json({error: "Failed to fetch budget planner"})
+    }
+}
+
+module.exports = {setBudget, getBudgets, getBudgetByCategory, deleteBudget, getBudgetPlanner}

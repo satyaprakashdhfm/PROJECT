@@ -1,12 +1,12 @@
-const moongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-const expenseSchema = new moongoose.Schema(
+const expenseSchema = new mongoose.Schema(
     {
-        // userId:{
-        //     type:mongoose.Schema.Types.ObjectId,
-        //     ref:"User",
-        //     required:true
-        // },
+        user:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"User",
+            required:true
+        },
         amount:{
             type:Number,
             required:true
@@ -23,9 +23,13 @@ const expenseSchema = new moongoose.Schema(
         description:{
             type:String,
             required:true
+        },
+        merchant:{
+            type:String,
+            required:false
         }
     },
     {timestamps:true}
 );
 
-module.exports = moongoose.model("Expense",expenseSchema)
+module.exports = mongoose.model("Expense",expenseSchema)

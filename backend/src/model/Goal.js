@@ -1,9 +1,9 @@
-const moongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-const goalSchema = new moongoose.Schema(
+const goalSchema = new mongoose.Schema(
     {
         userId:{
-            type:moongoose.Schema.Types.ObjectId,
+            type:mongoose.Schema.Types.ObjectId,
             ref:"User",
             required:true
         },
@@ -12,7 +12,7 @@ const goalSchema = new moongoose.Schema(
             required:true,
         },
         target_amount:{
-            type:String,
+            type:Number,
             required:true
         },
         current_amount:{
@@ -24,4 +24,4 @@ const goalSchema = new moongoose.Schema(
 )
 
 
-module.exports = moongoose.model('Goal',goalSchema)
+module.exports = mongoose.model('Goal',goalSchema)

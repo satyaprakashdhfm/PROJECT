@@ -18,12 +18,23 @@
     - Inconsistent response format using {"message":"..."} instead of {error:"..."}
     - Unnecessary console.log statements in code
     - Quoted object keys for responses
+    - Missing const declaration for addExpense function
     
     Missing from Problem Statement:
-    (None - basic functionality implemented)
+    ❌ Merchant field in Expense model - User Story 5 requires viewing expenses by merchant
+    ❌ GET all expenses endpoint - No way to fetch and list all user expenses with filters
+    ❌ GET single expense by ID - Cannot view specific expense details
+    ❌ UPDATE expense endpoint - Users cannot edit/correct expense entries
+    ❌ DELETE expense endpoint - No way to remove incorrect expenses
+    ❌ Filter expenses by category, date range, merchant - Required by User Story 5
     
     Changes made:
-    - expenseController.js: Changed error response from {"message":"..."} to {error:"..."}, removed console.log statements, removed quotes from response object keys
+    - expenseController.js: Changed error response from {"message":"..."} to {error:"..."}, removed console.log statements, removed quotes from response object keys, added const declaration to addExpense, added merchant field support in addExpense()
+    - expenseController.js: Implemented getExpenses() with filtering by category/date/merchant, getExpenseById() to fetch single expense, updateExpense() to edit expense, deleteExpense() to remove expense
+    - Expense.js model: Added optional merchant field (String type) to support User Story 5 requirement of viewing by merchant
+    - expenseRoutes.js: Added GET /, GET /:id, PUT /:id, DELETE /:id routes with authentication for complete CRUD operations
+    
+    Result: Full CRUD operations now available. Users can add, view (with filters), edit, and delete expenses. Merchant tracking enabled for better expense categorization.
 
 3. budgetController:
     
@@ -35,11 +46,16 @@
     ❌ Get all budgets endpoint - No way to fetch and display user's existing budgets
     ❌ Get single budget by category - Cannot view specific budget details
     ❌ Delete budget endpoint - No way to remove budgets
+    ❌ Budget Planner feature - User Story 7 requires planning future expenses with budget planner
+    ❌ Past spending analysis for budget recommendations
     
     Changes made:
     - budgetController.js: Added userId to Budget.findOne() query and Budget.create() object, added getBudgets() to fetch all user budgets, getBudgetByCategory() to get specific budget, deleteBudget() to remove budget, removed quotes from response object keys
+    - budgetController.js: Implemented getBudgetPlanner() to analyze past 3 months spending, calculate monthly averages, project future expenses, and provide budget recommendations with adequate/insufficient status
     - Budget.js model: Added userId field with ObjectId reference to User collection
-    - budgetRoutes.js: Added GET /budgets, GET /budgets/:category, DELETE /budgets/:category routes, removed console.log statements
+    - budgetRoutes.js: Added GET /budgets, GET /budgets/planner, GET /budgets/:category, DELETE /budgets/:category routes, removed console.log statements
+    
+    Result: Complete budget management with CRUD operations. Budget planner analyzes past spending patterns and provides intelligent recommendations for future budget planning.
 
 4. dashboardController:
     
@@ -56,9 +72,14 @@
     ❌ Recent expenses list - Not implemented
     ❌ Budget vs actual spending comparison - Not implemented
     ❌ Data for graphs/charts visualization - Not implemented
+    ❌ Filter dashboard by category, date range, merchant - User Story 5 requires viewing by category/date/merchant
     
     Changes made:
     - dashboardController.js: Fixed variable scope error, corrected userId to req.user.id, implemented complete getSummary function with totalExpenses, expensesByCategory, expensesByMonth (last 6 months), recentExpenses (last 10), budgetComparison, and statistics for visualization
+    - dashboardController.js: Added query parameter filtering support for category, startDate, endDate, and merchant to enable filtered dashboard views as per User Story 5
+    - dashboardRoutes.js: Added GET /summary route with authentication (file was completely empty before)
+    
+    Result: Complete dashboard with visualization data and filtering capabilities. Users can now view expenses by category, date range, and merchant as required by project description.
 
 5. exportController:
     
@@ -106,3 +127,57 @@
     - Goal.js model: Added userId and current_amount fields
     - reportController.js & reportRoutes.js: Deprecated and merged into goalController
     - app.js: Removed reportRoute, added importRoute and goalRoute
+
+8. Model Files (DATABASE SCHEMA):
+    
+    Problems:
+    - Typo in 3 model files: "moongoose" instead of "mongoose" causing runtime errors
+    - Expense.js: userId field was commented out, breaking user-expense relationship
+    - Goal.js fixed the target_amount to number for calculations
+    - Inconsistency: Only Budget.js was correct
+    
+    Security Issues:
+    ❌ Missing user field in Expense model - expenses not linked to users (CRITICAL)
+    ❌ All users could potentially see each other's expenses
+    
+    Changes made:
+    - User.js: Fixed typo "moongoose" → "mongoose"
+    - Expense.js: Fixed typo "moongoose" → "mongoose", uncommented and renamed userId field to "user" to match controller usage (user: ObjectId ref to User model)
+    - Goal.js: Fixed typo "moongoose" → "mongoose" &  (target_amount correctly set as Number type)
+    - Budget.js: No changes needed - already correct
+    
+    Result: All models now properly use mongoose, have correct field types, and maintain proper user relationships for data security and integrity
+9. Route Files (API ENDPOINTS):
+    
+    Problems:
+    - dashboardRoutes.js was completely empty - Dashboard API endpoint not accessible despite controller being fully implemented
+    
+    Missing from Problem Statement:
+    ❌ Dashboard route not defined - GET /summary endpoint missing
+    
+    Changes made:
+    - dashboardRoutes.js: Implemented complete route file with GET /summary endpoint and authentication middleware
+    - expenseRoutes.js: Cleaned up commented console.log statements
+    - All other route files (authRoutes.js, budgetRoutes.js, exportRoutes.js, importRoutes.js, goalRoutes.js) were already correctly implemented with proper authentication middleware
+10. Utility Files (HELPER FUNCTIONS & MIDDLEWARE):
+    
+    Problems:
+    - authMiddleware.js had 3 critical bugs: missing const declaration (creating global variable), wrong req.user structure (string instead of object causing req.user.id to fail), inconsistent response format using "message" instead of "error"
+    - categorize.js was completely empty - auto-categorization for bank imports not working
+    - errorMiddleware.js empty but not critical for basic functionality
+    - excelExport.js & pdfExport.js empty but export logic already in exportController (files redundant)
+    
+    Missing from Problem Statement:
+    ❌ Auto-categorization logic for imported transactions - User Story 3 requires automatic expense categorization
+    ❌ Keyword-based mapping for Food, Travel, Shopping, Bills, Other categories
+    ❌ Global error handling middleware for consistent error responses
+    
+    Changes made:
+    - authMiddleware.js: Added const declaration to protect function, fixed req.user structure from string to object {id: decoded.id} so controllers can access req.user.id properly, standardized error responses from {message:"..."} to {error:"..."} format
+    - categorize.js: Implemented simple keyword-based auto-categorization function that maps transaction descriptions to categories (Food: restaurant/grocery/zomato/swiggy, Travel: uber/ola/taxi/fuel, Shopping: amazon/flipkart/mall, Bills: electric/rent/mobile/subscription, Other: default)
+    - db.js: No changes needed - already working correctly
+    Removed files : 
+    - errorMiddleware.js: Left empty (optional - not required for core functionality)
+    - excelExport.js & pdfExport.js: Left empty (redundant files - logic already in exportController)
+    
+    Result: Authentication middleware now works correctly with proper req.user object structure and consistent error formatting. Bank import auto-categorization now functional with simple keyword matching logic.

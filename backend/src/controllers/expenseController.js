@@ -33,7 +33,7 @@ const addExpense = async (req,res) => {
         ])
 
         const spent = total[0]?.totalSpent || 0; 
-        const budget = await Budget.findOne({user:req.user.id,category});
+        const budget = await Budget.findOne({userId:req.user.id,category});
 
         let alert = null
         if(budget && spent > budget.budget_amount){

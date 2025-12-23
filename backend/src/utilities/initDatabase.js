@@ -139,11 +139,12 @@ const createExpenses = async (users) => {
                 }
 
                 expensesData.push({
-                    userId: user._id,
+                    user: user._id,
                     amount,
                     date: expenseDate,
                     category,
-                    description: getExpenseDescription(category)
+                    description: getExpenseDescription(category),
+                    merchant: getMerchantName(category)
                 });
             }
         }
@@ -157,6 +158,67 @@ const createExpenses = async (users) => {
         console.error('Error creating expenses:', error.message);
         throw error;
     }
+};
+
+/**
+ * Get random merchant based on category
+ */
+const getMerchantName = (category) => {
+    const merchants = {
+        Food: [
+            'Walmart Supermarket',
+            'McDonald\'s',
+            'Starbucks',
+            'Domino\'s Pizza',
+            'Zomato',
+            'Swiggy',
+            'Local Restaurant',
+            'Whole Foods'
+        ],
+        Travel: [
+            'Uber',
+            'Ola Cabs',
+            'Shell Gas Station',
+            'Amtrak',
+            'Indian Railways',
+            'Local Bus Service',
+            'BP Petrol Pump',
+            'Airport Parking'
+        ],
+        Shopping: [
+            'Amazon',
+            'Flipkart',
+            'Target',
+            'Best Buy',
+            'Walmart',
+            'Nike Store',
+            'Clothing Boutique',
+            'Electronics Mall'
+        ],
+        Bills: [
+            'Electric Company',
+            'Comcast Internet',
+            'T-Mobile',
+            'Water Authority',
+            'Landlord',
+            'State Farm Insurance',
+            'Netflix',
+            'Spotify'
+        ],
+        Other: [
+            'CVS Pharmacy',
+            'Local Gym',
+            'Pet Store',
+            'Entertainment Venue',
+            'Healthcare Provider',
+            'Charity Organization',
+            'Miscellaneous',
+            'General Store'
+        ]
+    };
+
+    const categoryMerchants = merchants[category] || merchants.Other;
+    return categoryMerchants[Math.floor(Math.random() * categoryMerchants.length)];
 };
 
 /**

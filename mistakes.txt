@@ -19,6 +19,7 @@
     - Unnecessary console.log statements in code
     - Quoted object keys for responses
     - Missing const declaration for addExpense function
+    - Wrong field name in Budget query - line 36 used Budget.findOne({user:...}) but Budget model has userId field causing query to fail
     
     Missing from Problem Statement:
     ❌ Merchant field in Expense model - User Story 5 requires viewing expenses by merchant
@@ -30,11 +31,12 @@
     
     Changes made:
     - expenseController.js: Changed error response from {"message":"..."} to {error:"..."}, removed console.log statements, removed quotes from response object keys, added const declaration to addExpense, added merchant field support in addExpense()
+    - expenseController.js: Fixed Budget.findOne query on line 36 from {user:req.user.id} to {userId:req.user.id} to match Budget model schema
     - expenseController.js: Implemented getExpenses() with filtering by category/date/merchant, getExpenseById() to fetch single expense, updateExpense() to edit expense, deleteExpense() to remove expense
     - Expense.js model: Added optional merchant field (String type) to support User Story 5 requirement of viewing by merchant
     - expenseRoutes.js: Added GET /, GET /:id, PUT /:id, DELETE /:id routes with authentication for complete CRUD operations
     
-    Result: Full CRUD operations now available. Users can add, view (with filters), edit, and delete expenses. Merchant tracking enabled for better expense categorization.
+    Result: Full CRUD operations now available. Users can add, view (with filters), edit, and delete expenses. Merchant tracking enabled for better expense categorization. Budget alert functionality now working correctly.
 
 3. budgetController:
     

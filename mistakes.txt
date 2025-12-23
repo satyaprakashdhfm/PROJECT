@@ -37,6 +37,11 @@
     - expenseRoutes.js: Added GET /, GET /:id, PUT /:id, DELETE /:id routes with authentication for complete CRUD operations
     
     Result: Full CRUD operations now available. Users can add, view (with filters), edit, and delete expenses. Merchant tracking enabled for better expense categorization. Budget alert functionality now working correctly.
+    
+    TESTING UPDATE (23-12-2025):
+    ❌ BUG FOUND: MongoDB aggregate query in addExpense() was missing _id field in $group stage, causing aggregate operation to fail
+    ✅ FIX APPLIED: Added _id: null to $group stage on line 31 - Budget alert calculation now working properly
+    ✅ TESTED: All expense endpoints verified working - add, get all, get by id, update, delete, filters (category/date/merchant)
 
 3. budgetController:
     
@@ -183,3 +188,6 @@
     - excelExport.js & pdfExport.js: Left empty (redundant files - logic already in exportController)
     
     Result: Authentication middleware now works correctly with proper req.user object structure and consistent error formatting. Bank import auto-categorization now functional with simple keyword matching logic.
+
+11. npm packages installation error:
+    Error: E401 "Incorrect or missing password" - npm authentication token issue with stored credentials in system - Resolved by using yarn package manager instead of npm which successfully installed all dependencies (bcryptjs, cors, dotenv, exceljs, express, jsonwebtoken, mongoose, nodemon, pdfkit)

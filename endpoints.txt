@@ -1,0 +1,955 @@
+# WEALTHWISE API ENDPOINTS DOCUMENTATION
+# Complete API Reference with Sample Requests & Responses
+# Base URL: http://localhost:3000 (or your deployed URL)
+# All protected endpoints require: Authorization: Bearer <JWT_TOKEN>
+
+================================================================================
+1. AUTHENTICATION ROUTES - /api/v1/auth
+================================================================================
+
+1.1 USER SIGNUP
+---------------
+Endpoint: POST /api/v1/auth/signup
+Authentication: Not Required
+Content-Type: application/json
+
+Request Body:
+{
+  "email": "testuser@example.com",
+  "password": "test1234"
+}
+
+Success Response (201):
+{
+  "message": "User registered successfully"
+}
+
+Error Responses:
+- 400: {"error": "Email and password are required"}
+- 400: {"error": "Invalid email format"}
+- 400: {"error": "Password must be at least 6 characters"}
+- 400: {"error": "User already exists"}
+- 400: {"error": "Invalid request body"}
+
+================================================================================
+
+1.2 USER LOGIN
+--------------
+Endpoint: POST /api/v1/auth/login
+Authentication: Not Required
+Content-Type: application/json
+
+Request Body:
+{
+  "email": "testuser@example.com",
+  "password": "test1234"
+}
+
+Success Response (200):
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NGE4MTI3YmRlODRkYmNjM2EyYjUwMSIsImlhdCI6MTc2NjQ5MDQxNCwiZXhwIjoxNzY2NTc2ODE0fQ.-tL1KgL_QgW0hXR32nBakoc-F7VI-7n3WbqZLhcTikk"
+}
+
+Error Responses:
+- 400: {"error": "User doesn't exist"}
+- 400: {"error": "Invalid credentials"}
+- 401: {"error": "Invalid credentials"}
+
+================================================================================
+
+1.3 PASSWORD RESET
+------------------
+Endpoint: POST /api/v1/auth/reset
+Authentication: Not Required
+Content-Type: application/json
+
+Request Body:
+{
+  "email": "testuser@example.com",
+  "newPassword": "newpass123"
+}
+
+Success Response (200):
+{
+  "message": "Password reset successfully"
+}
+
+Error Responses:
+- 400: {"error": "Email and new password are required"}
+- 400: {"error": "User doesn't exist"}
+- 400: {"error": "Failed to reset password"}
+
+================================================================================
+2. EXPENSE ROUTES - /api/v1/expense
+================================================================================
+
+2.1 ADD EXPENSE
+---------------
+Endpoint: POST /api/v1/expense/add
+Authentication: Required
+Content-Type: application/json
+Headers: Authorization: Bearer <TOKEN>
+
+Request Body:
+{
+  "amount": 500,
+  "date": "2025-12-23",
+  "category": "Food",
+  "description": "Lunch at restaurant",
+  "merchant": "Restaurant ABC"
+}
+
+Note: category must be one of: "Food", "Travel", "Shopping", "Bills", "Other"
+Note: merchant field is optional
+
+Success Response (201):
+{
+  "message": "Expense added successfully",
+  "alert": null
+}
+
+OR with budget alert (201):
+{
+  "message": "Expense added successfully",
+  "alert": "Budget exceeded for Food"
+}
+
+Error Responses:
+- 400: {"error": "All fields are required"}
+- 400: {"error": "Invalid request body"}
+- 401: {"error": "Not authorized, token missing"}
+- 401: {"error": "Not authorized, invalid token"}
+
+================================================================================
+
+2.2 GET ALL EXPENSES
+--------------------
+Endpoint: GET /api/v1/expense/
+Authentication: Required
+Headers: Authorization: Bearer <TOKEN>
+
+Query Parameters (all optional):
+- category: Filter by category (e.g., Food, Travel)
+- startDate: Filter from date (format: YYYY-MM-DD)
+- endDate: Filter to date (format: YYYY-MM-DD)
+- merchant: Filter by merchant name (case-insensitive search)
+
+Example: GET /api/v1/expense/?category=Food&startDate=2025-12-01&endDate=2025-12-31
+
+Success Response (200):
+{
+  "message": "Expenses fetched successfully",
+  "count": 4,
+  "data": [
+    {
+      "_id": "694a8149bde84dbcc3a2b507",
+      "user": "694a8127bde84dbcc3a2b501",
+      "amount": 500,
+      "date": "2025-12-23T10:00:00.000Z",
+      "category": "Food",
+      "description": "Lunch at restaurant",
+      "merchant": "Restaurant ABC",
+      "createdAt": "2025-12-23T11:47:21.262Z",
+      "updatedAt": "2025-12-23T11:47:21.262Z",
+      "__v": 0
+    },
+    {
+      "_id": "694a816772528fb0c3a8083d",
+      "user": "694a8127bde84dbcc3a2b501",
+      "amount": 200,
+      "date": "2025-12-22T00:00:00.000Z",
+      "category": "Travel",
+      "description": "Uber ride",
+      "merchant": "Uber",
+      "createdAt": "2025-12-23T11:47:51.146Z",
+      "updatedAt": "2025-12-23T11:47:51.146Z",
+      "__v": 0
+    }
+  ]
+}
+
+Error Responses:
+- 500: {"error": "Failed to fetch expenses"}
+- 401: {"error": "Not authorized, token missing"}
+
+================================================================================
+
+2.3 GET SINGLE EXPENSE BY ID
+-----------------------------
+Endpoint: GET /api/v1/expense/:id
+Authentication: Required
+Headers: Authorization: Bearer <TOKEN>
+
+Example: GET /api/v1/expense/694a8149bde84dbcc3a2b507
+
+Success Response (200):
+{
+  "message": "Expense fetched successfully",
+  "data": {
+    "_id": "694a8149bde84dbcc3a2b507",
+    "user": "694a8127bde84dbcc3a2b501",
+    "amount": 500,
+    "date": "2025-12-23T10:00:00.000Z",
+    "category": "Food",
+    "description": "Lunch at restaurant",
+    "merchant": "Restaurant ABC",
+    "createdAt": "2025-12-23T11:47:21.262Z",
+    "updatedAt": "2025-12-23T11:47:21.262Z",
+    "__v": 0
+  }
+}
+
+Error Responses:
+- 404: {"error": "Expense not found"}
+- 500: {"error": "Failed to fetch expense"}
+
+================================================================================
+
+2.4 UPDATE EXPENSE
+------------------
+Endpoint: PUT /api/v1/expense/:id
+Authentication: Required
+Content-Type: application/json
+Headers: Authorization: Bearer <TOKEN>
+
+Request Body (all fields optional):
+{
+  "amount": 550,
+  "date": "2025-12-23",
+  "category": "Food",
+  "description": "Dinner at restaurant",
+  "merchant": "Restaurant XYZ"
+}
+
+Success Response (200):
+{
+  "message": "Expense updated successfully",
+  "data": {
+    "_id": "694a8149bde84dbcc3a2b507",
+    "user": "694a8127bde84dbcc3a2b501",
+    "amount": 550,
+    "date": "2025-12-23T00:00:00.000Z",
+    "category": "Food",
+    "description": "Dinner at restaurant",
+    "merchant": "Restaurant XYZ",
+    "createdAt": "2025-12-23T11:47:21.262Z",
+    "updatedAt": "2025-12-23T12:00:00.000Z",
+    "__v": 0
+  }
+}
+
+Error Responses:
+- 404: {"error": "Expense not found"}
+- 400: {"error": "Failed to update expense"}
+
+================================================================================
+
+2.5 DELETE EXPENSE
+------------------
+Endpoint: DELETE /api/v1/expense/:id
+Authentication: Required
+Headers: Authorization: Bearer <TOKEN>
+
+Example: DELETE /api/v1/expense/694a8149bde84dbcc3a2b507
+
+Success Response (200):
+{
+  "message": "Expense deleted successfully"
+}
+
+Error Responses:
+- 404: {"error": "Expense not found"}
+- 500: {"error": "Failed to delete expense"}
+
+================================================================================
+3. BUDGET ROUTES - /api/v1/budgets
+================================================================================
+
+3.1 SET/UPDATE BUDGET
+---------------------
+Endpoint: POST /api/v1/budgets/set
+Authentication: Required
+Content-Type: application/json
+Headers: Authorization: Bearer <TOKEN>
+
+Request Body:
+{
+  "category": "Food",
+  "budget_amount": 2000
+}
+
+Success Response (201):
+{
+  "message": "Budget set successfully"
+}
+
+Error Responses:
+- 400: {"error": "Category and limit required"}
+- 400: {"error": "Invalid request body"}
+
+================================================================================
+
+3.2 GET ALL BUDGETS
+-------------------
+Endpoint: GET /api/v1/budgets/
+Authentication: Required
+Headers: Authorization: Bearer <TOKEN>
+
+Success Response (200):
+{
+  "message": "Budgets fetched successfully",
+  "data": [
+    {
+      "_id": "694a817372528fb0c3a80843",
+      "userId": "694a8127bde84dbcc3a2b501",
+      "category": "Food",
+      "budget_amount": 2000,
+      "createdAt": "2025-12-23T11:48:03.271Z",
+      "updatedAt": "2025-12-23T11:48:03.271Z",
+      "__v": 0
+    },
+    {
+      "_id": "694a817872528fb0c3a80846",
+      "userId": "694a8127bde84dbcc3a2b501",
+      "category": "Travel",
+      "budget_amount": 1000,
+      "createdAt": "2025-12-23T11:48:08.999Z",
+      "updatedAt": "2025-12-23T11:48:08.999Z",
+      "__v": 0
+    }
+  ]
+}
+
+Error Responses:
+- 500: {"error": "Failed to fetch budgets"}
+
+================================================================================
+
+3.3 GET BUDGET BY CATEGORY
+---------------------------
+Endpoint: GET /api/v1/budgets/:category
+Authentication: Required
+Headers: Authorization: Bearer <TOKEN>
+
+Example: GET /api/v1/budgets/Food
+
+Success Response (200):
+{
+  "message": "Budget fetched successfully",
+  "data": {
+    "_id": "694a817372528fb0c3a80843",
+    "userId": "694a8127bde84dbcc3a2b501",
+    "category": "Food",
+    "budget_amount": 2000,
+    "createdAt": "2025-12-23T11:48:03.271Z",
+    "updatedAt": "2025-12-23T11:48:03.271Z",
+    "__v": 0
+  }
+}
+
+Error Responses:
+- 404: {"error": "Budget not found"}
+- 500: {"error": "Failed to fetch budget"}
+
+================================================================================
+
+3.4 DELETE BUDGET
+-----------------
+Endpoint: DELETE /api/v1/budgets/:category
+Authentication: Required
+Headers: Authorization: Bearer <TOKEN>
+
+Example: DELETE /api/v1/budgets/Shopping
+
+Success Response (200):
+{
+  "message": "Budget deleted successfully"
+}
+
+Error Responses:
+- 404: {"error": "Budget not found"}
+- 500: {"error": "Failed to delete budget"}
+
+================================================================================
+
+3.5 GET BUDGET PLANNER
+----------------------
+Endpoint: GET /api/v1/budgets/planner
+Authentication: Required
+Headers: Authorization: Bearer <TOKEN>
+
+Description: Analyzes past 3 months spending and provides budget recommendations
+
+Success Response (200):
+{
+  "message": "Budget planner data fetched successfully",
+  "data": [
+    {
+      "category": "Food",
+      "currentBudget": 2000,
+      "pastMonthlyAverage": "1100.00",
+      "projectedNextMonth": "1100.00",
+      "recommendedBudget": 1210,
+      "difference": "790.00",
+      "status": "adequate"
+    },
+    {
+      "category": "Travel",
+      "currentBudget": 1000,
+      "pastMonthlyAverage": "66.67",
+      "projectedNextMonth": "66.67",
+      "recommendedBudget": 74,
+      "difference": "926.00",
+      "status": "adequate"
+    }
+  ]
+}
+
+Note: status can be "adequate" or "insufficient"
+Note: difference is positive when budget is adequate, negative when insufficient
+
+Error Responses:
+- 500: {"error": "Failed to fetch budget planner"}
+
+================================================================================
+4. DASHBOARD ROUTES - /api/v1/dashboard
+================================================================================
+
+4.1 GET DASHBOARD SUMMARY
+--------------------------
+Endpoint: GET /api/v1/dashboard/summary
+Authentication: Required
+Headers: Authorization: Bearer <TOKEN>
+
+Query Parameters (all optional):
+- category: Filter by category
+- startDate: Filter from date
+- endDate: Filter to date
+- merchant: Filter by merchant
+
+Example: GET /api/v1/dashboard/summary?category=Food
+
+Success Response (200):
+{
+  "message": "Dashboard data fetched successfully",
+  "data": {
+    "totalExpenses": 3500,
+    "expensesByCategory": {
+      "Food": 3300,
+      "Travel": 200
+    },
+    "expensesByMonth": {
+      "2025-12": 3500
+    },
+    "recentExpenses": [
+      {
+        "id": "694a8149bde84dbcc3a2b507",
+        "amount": 500,
+        "category": "Food",
+        "description": "Lunch at restaurant",
+        "date": "2025-12-23T10:00:00.000Z"
+      },
+      {
+        "id": "694a817f72528fb0c3a80848",
+        "amount": 1800,
+        "category": "Food",
+        "description": "Groceries for the week",
+        "date": "2025-12-23T00:00:00.000Z"
+      }
+    ],
+    "budgetComparison": [
+      {
+        "category": "Food",
+        "budgetAmount": 2000,
+        "spent": 3300,
+        "remaining": -1300,
+        "percentageUsed": "165.00",
+        "isExceeded": true
+      },
+      {
+        "category": "Travel",
+        "budgetAmount": 1000,
+        "spent": 200,
+        "remaining": 800,
+        "percentageUsed": "20.00",
+        "isExceeded": false
+      }
+    ],
+    "statistics": {
+      "totalCategories": 2,
+      "totalBudgets": 2,
+      "highestExpenseCategory": "Food",
+      "averageExpensePerMonth": "3500.00"
+    }
+  }
+}
+
+Error Responses:
+- 500: {"error": "Failed to fetch dashboard data"}
+
+================================================================================
+5. GOALS ROUTES - /api/v1/goals
+================================================================================
+
+5.1 CREATE GOAL
+---------------
+Endpoint: POST /api/v1/goals/
+Authentication: Required
+Content-Type: application/json
+Headers: Authorization: Bearer <TOKEN>
+
+Request Body:
+{
+  "goal": "Save for vacation",
+  "target_amount": 50000
+}
+
+Success Response (201):
+{
+  "message": "Goal created successfully",
+  "data": {
+    "userId": "694a8127bde84dbcc3a2b501",
+    "goal": "Save for vacation",
+    "target_amount": 50000,
+    "current_amount": 0,
+    "_id": "694a819372528fb0c3a8084f",
+    "createdAt": "2025-12-23T11:48:35.514Z",
+    "updatedAt": "2025-12-23T11:48:35.514Z",
+    "__v": 0
+  }
+}
+
+Error Responses:
+- 400: {"error": "Goal name and target amount required"}
+- 400: {"error": "Failed to create goal"}
+
+================================================================================
+
+5.2 GET ALL GOALS
+-----------------
+Endpoint: GET /api/v1/goals/
+Authentication: Required
+Headers: Authorization: Bearer <TOKEN>
+
+Success Response (200):
+{
+  "message": "Goals fetched successfully",
+  "data": [
+    {
+      "_id": "694a819372528fb0c3a8084f",
+      "userId": "694a8127bde84dbcc3a2b501",
+      "goal": "Save for vacation",
+      "target_amount": 50000,
+      "current_amount": 5000,
+      "createdAt": "2025-12-23T11:48:35.514Z",
+      "updatedAt": "2025-12-23T11:49:00.000Z",
+      "__v": 0,
+      "progress": "10.00%",
+      "remaining": 45000
+    }
+  ]
+}
+
+Error Responses:
+- 500: {"error": "Failed to fetch goals"}
+
+================================================================================
+
+5.3 UPDATE GOAL PROGRESS
+-------------------------
+Endpoint: PUT /api/v1/goals/:goalId/progress
+Authentication: Required
+Content-Type: application/json
+Headers: Authorization: Bearer <TOKEN>
+
+Request Body:
+{
+  "amount": 5000
+}
+
+Note: Amount is added to current_amount (not replaced)
+
+Success Response (200):
+{
+  "message": "Goal progress updated",
+  "data": {
+    "goal": "Save for vacation",
+    "current": 5000,
+    "target": 50000,
+    "progress": "10.00%"
+  }
+}
+
+Error Responses:
+- 400: {"error": "Amount required"}
+- 404: {"error": "Goal not found"}
+- 400: {"error": "Failed to update goal progress"}
+
+================================================================================
+
+5.4 DELETE GOAL
+---------------
+Endpoint: DELETE /api/v1/goals/:goalId
+Authentication: Required
+Headers: Authorization: Bearer <TOKEN>
+
+Example: DELETE /api/v1/goals/694a819372528fb0c3a8084f
+
+Success Response (200):
+{
+  "message": "Goal deleted successfully"
+}
+
+Error Responses:
+- 404: {"error": "Goal not found"}
+- 500: {"error": "Failed to delete goal"}
+
+================================================================================
+
+5.5 GET CATEGORY REPORT
+------------------------
+Endpoint: GET /api/v1/goals/reports/category
+Authentication: Required
+Headers: Authorization: Bearer <TOKEN>
+
+Description: Detailed spending analysis by category with budget comparison
+
+Success Response (200):
+{
+  "message": "Category report generated successfully",
+  "data": [
+    {
+      "category": "Food",
+      "totalSpent": 3300,
+      "transactionCount": 4,
+      "averagePerTransaction": "825.00",
+      "budget": 2000,
+      "remaining": -1300,
+      "percentageUsed": "165.00"
+    },
+    {
+      "category": "Travel",
+      "totalSpent": 200,
+      "transactionCount": 1,
+      "averagePerTransaction": "200.00",
+      "budget": 1000,
+      "remaining": 800,
+      "percentageUsed": "20.00"
+    }
+  ]
+}
+
+Error Responses:
+- 500: {"error": "Failed to generate category report"}
+
+================================================================================
+
+5.6 GET TIME-BASED REPORT
+--------------------------
+Endpoint: GET /api/v1/goals/reports/time
+Authentication: Required
+Headers: Authorization: Bearer <TOKEN>
+
+Query Parameters:
+- period: "daily", "weekly", or "monthly" (required)
+
+Example: GET /api/v1/goals/reports/time?period=monthly
+
+Success Response (200):
+{
+  "message": "monthly report generated successfully",
+  "data": {
+    "2025-12": {
+      "total": 3500,
+      "count": 5,
+      "byCategory": {
+        "Food": 3300,
+        "Travel": 200
+      }
+    },
+    "2025-11": {
+      "total": 2800,
+      "count": 8,
+      "byCategory": {
+        "Food": 1500,
+        "Travel": 800,
+        "Shopping": 500
+      }
+    }
+  }
+}
+
+Error Responses:
+- 500: {"error": "Failed to generate time-based report"}
+
+================================================================================
+
+5.7 GET SPENDING TRENDS
+-----------------------
+Endpoint: GET /api/v1/goals/reports/trends
+Authentication: Required
+Headers: Authorization: Bearer <TOKEN>
+
+Description: Monthly trends with AI-generated insights
+
+Success Response (200):
+{
+  "message": "Spending trends generated successfully",
+  "data": {
+    "trends": [
+      {
+        "month": "2025-12",
+        "amount": 3500
+      }
+    ],
+    "insights": [
+      "Your highest spending category is Food with ₹3300",
+      "Your average monthly spending is ₹3500.00"
+    ]
+  }
+}
+
+With multiple months:
+{
+  "message": "Spending trends generated successfully",
+  "data": {
+    "trends": [
+      {
+        "month": "2025-10",
+        "amount": 2800
+      },
+      {
+        "month": "2025-11",
+        "amount": 3200
+      },
+      {
+        "month": "2025-12",
+        "amount": 3500
+      }
+    ],
+    "insights": [
+      "Your highest spending category is Food with ₹5300",
+      "Your average monthly spending is ₹3166.67",
+      "Your spending increased by 9.38% last month"
+    ]
+  }
+}
+
+Error Responses:
+- 500: {"error": "Failed to generate spending trends"}
+
+================================================================================
+6. IMPORT ROUTES - /api/v1/import
+================================================================================
+
+6.1 IMPORT FROM BANK
+--------------------
+Endpoint: POST /api/v1/import/bank
+Authentication: Required
+Content-Type: application/json
+Headers: Authorization: Bearer <TOKEN>
+
+Request Body:
+{
+  "transactions": [
+    {
+      "amount": 450,
+      "date": "2025-12-20",
+      "description": "Amazon Purchase"
+    },
+    {
+      "amount": 150,
+      "date": "2025-12-21",
+      "description": "Starbucks Coffee"
+    }
+  ]
+}
+
+Note: Transactions will be auto-categorized based on description keywords
+
+Success Response (200):
+{
+  "message": "Import completed",
+  "data": {
+    "imported": 2,
+    "failed": 0,
+    "expenses": [
+      {
+        "_id": "694a81a372528fb0c3a80853",
+        "user": "694a8127bde84dbcc3a2b501",
+        "amount": 450,
+        "date": "2025-12-20T00:00:00.000Z",
+        "category": "Shopping",
+        "description": "Amazon Purchase",
+        "createdAt": "2025-12-23T11:49:00.000Z",
+        "updatedAt": "2025-12-23T11:49:00.000Z",
+        "__v": 0
+      },
+      {
+        "_id": "694a81a472528fb0c3a80855",
+        "user": "694a8127bde84dbcc3a2b501",
+        "amount": 150,
+        "date": "2025-12-21T00:00:00.000Z",
+        "category": "Other",
+        "description": "Starbucks Coffee",
+        "createdAt": "2025-12-23T11:49:01.000Z",
+        "updatedAt": "2025-12-23T11:49:01.000Z",
+        "__v": 0
+      }
+    ],
+    "errors": []
+  }
+}
+
+With errors:
+{
+  "message": "Import completed",
+  "data": {
+    "imported": 1,
+    "failed": 1,
+    "expenses": [...],
+    "errors": [
+      {
+        "index": 1,
+        "error": "Missing required fields"
+      }
+    ]
+  }
+}
+
+Auto-categorization keywords:
+- Food: restaurant, grocery, food, zomato, swiggy, pizza, cafe
+- Travel: uber, ola, taxi, cab, flight, bus, train, fuel, petrol
+- Shopping: amazon, flipkart, mall, store, shop, clothing
+- Bills: electric, electricity, rent, water, mobile, internet, subscription, recharge
+- Other: default for unmatched descriptions
+
+Error Responses:
+- 400: {"error": "Valid transactions array required"}
+- 500: {"error": "Failed to import transactions"}
+
+================================================================================
+7. EXPORT ROUTES - /api/v1/export
+================================================================================
+
+7.1 EXPORT TO EXCEL
+-------------------
+Endpoint: GET /api/v1/export/excel
+Authentication: Required
+Headers: Authorization: Bearer <TOKEN>
+
+Description: Downloads all user expenses as Excel (.xlsx) file
+
+Success Response (200):
+Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+Content-Disposition: attachment; filename=expenses.xlsx
+
+Excel file contains:
+- Header row: Date | Category | Description | Amount
+- All expenses sorted by date (newest first)
+- Professional styling with bold headers and gray background
+
+Error Responses:
+- 500: {"error": "Failed to export to Excel"}
+
+================================================================================
+
+7.2 EXPORT TO PDF
+-----------------
+Endpoint: GET /api/v1/export/pdf
+Authentication: Required
+Headers: Authorization: Bearer <TOKEN>
+
+Description: Downloads all user expenses as PDF file
+
+Success Response (200):
+Content-Type: application/pdf
+Content-Disposition: attachment; filename=expenses.pdf
+
+PDF file contains:
+- Title: "Expense Report"
+- Table with columns: Date | Category | Description | Amount
+- All expenses sorted by date
+- Total amount at the bottom
+
+Error Responses:
+- 500: {"error": "Failed to export to PDF"}
+
+================================================================================
+AUTHENTICATION ERRORS (Common to all protected routes)
+================================================================================
+
+401: {"error": "Not authorized, token missing"}
+- Occurs when Authorization header is not provided
+
+401: {"error": "Not authorized, invalid token"}
+- Occurs when JWT token is invalid, expired, or malformed
+
+================================================================================
+SUMMARY
+================================================================================
+
+Total Endpoints: 28
+
+Authentication (Public): 3
+- POST /api/v1/auth/signup
+- POST /api/v1/auth/login
+- POST /api/v1/auth/reset
+
+Expenses (Protected): 5
+- POST /api/v1/expense/add
+- GET /api/v1/expense/
+- GET /api/v1/expense/:id
+- PUT /api/v1/expense/:id
+- DELETE /api/v1/expense/:id
+
+Budgets (Protected): 5
+- POST /api/v1/budgets/set
+- GET /api/v1/budgets/
+- GET /api/v1/budgets/:category
+- DELETE /api/v1/budgets/:category
+- GET /api/v1/budgets/planner
+
+Dashboard (Protected): 1
+- GET /api/v1/dashboard/summary
+
+Goals (Protected): 4
+- POST /api/v1/goals/
+- GET /api/v1/goals/
+- PUT /api/v1/goals/:goalId/progress
+- DELETE /api/v1/goals/:goalId
+
+Reports (Protected): 3
+- GET /api/v1/goals/reports/category
+- GET /api/v1/goals/reports/time
+- GET /api/v1/goals/reports/trends
+
+Import (Protected): 1
+- POST /api/v1/import/bank
+
+Export (Protected): 2
+- GET /api/v1/export/excel
+- GET /api/v1/export/pdf
+
+================================================================================
+TESTING NOTES
+================================================================================
+
+All endpoints have been tested and verified working on 23-12-2025:
+✅ User registration, login, password reset
+✅ Full CRUD operations on expenses
+✅ Budget management with alerts
+✅ Dashboard with visualization data
+✅ Financial goals with progress tracking
+✅ Custom reports (category, time-based, trends)
+✅ Bank import with auto-categorization
+✅ Export to Excel and PDF
+✅ Filtering by category, date range, merchant
+✅ Input validation and error handling
+✅ JWT authentication and authorization
+
+Bug Fixed:
+❌ MongoDB aggregate $group stage missing _id field
+✅ Fixed by adding _id: null to $group stage in expenseController.js
+
+Server Status: Production Ready ✅

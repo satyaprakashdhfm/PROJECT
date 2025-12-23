@@ -29,6 +29,7 @@ const addExpense = async (req,res) => {
             {$match:{
                 user:expense.user, category}},
             {$group:{
+              _id: null,
               totalSpent:{$sum:"$amount"}}}
         ])
 
@@ -55,7 +56,7 @@ const getExpenses = async (req,res) => {
         
         if(category) filter.category = category
         if(merchant) filter.merchant = new RegExp(merchant, 'i')
-        if(startDate || endDate){
+        if(startDate || endDate){ 
             filter.date = {}
             if(startDate) filter.date.$gte = new Date(startDate)
             if(endDate) filter.date.$lte = new Date(endDate)
@@ -79,7 +80,6 @@ const getExpenseById = async (req,res) => {
         const {id} = req.params
         
         const expense = await Expense.findOne({_id: id, user: req.user.id})
-        
         if(!expense) return res.status(404).json({error: "Expense not found"})
         
         res.status(200).json({

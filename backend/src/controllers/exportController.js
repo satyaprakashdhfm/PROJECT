@@ -23,6 +23,7 @@ exports.exportToExcel = async(req,res) => {
             {header: 'Date', key: 'date', width: 15},
             {header: 'Category', key: 'category', width: 15},
             {header: 'Description', key: 'description', width: 30},
+            {header: 'Merchant', key: 'merchant', width: 20},
             {header: 'Amount', key: 'amount', width: 15}
         ]
 
@@ -32,6 +33,7 @@ exports.exportToExcel = async(req,res) => {
                 date: exp.date.toISOString().split('T')[0],
                 category: exp.category,
                 description: exp.description,
+                merchant: exp.merchant || 'N/A',
                 amount: exp.amount
             })
         })
@@ -71,7 +73,7 @@ exports.exportToPDF = async(req,res) => {
         doc.moveDown()
 
         // Add table header
-        doc.fontSize(12).text('Date          Category          Description                    Amount', {
+        doc.fontSize(12).text('Date          Category          Description              Merchant              Amount', {
             underline: true
         })
         doc.moveDown(0.5)
@@ -80,7 +82,8 @@ exports.exportToPDF = async(req,res) => {
         let total = 0
         expenses.forEach(exp => {
             const date = exp.date.toISOString().split('T')[0]
-            const line = `${date}  ${exp.category.padEnd(15)}  ${exp.description.substring(0,25).padEnd(28)}  ₹${exp.amount}`
+            const merchant = (exp.merchant || 'N/A').substring(0,18).padEnd(20)
+            const line = `${date}  ${exp.category.padEnd(15)}  ${exp.description.substring(0,22).padEnd(25)}  ${merchant}  ₹${exp.amount}`
             doc.fontSize(10).text(line)
             total += exp.amount
         })

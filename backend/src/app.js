@@ -4,7 +4,11 @@ const cors = require('cors')
 const connectDb = require('./utilities/db')
 const authRoute = require('./routes/authRoutes')
 const expenseRoute = require('./routes/expenseRoutes')
+const importRoute = require('./routes/importRoutes')
 const budgetRoute = require('./routes/budgetRoutes')
+const dashboardRoute = require('./routes/dashboardRoutes')
+const exportRoute = require('./routes/exportRoutes')
+const goalRoute = require('./routes/goalRoutes')
 
 dotenv.config()
 connectDb()
@@ -15,7 +19,11 @@ app.use(express.json())
 
 app.use('/api/v1/auth',authRoute) 
 app.use('/api/v1/expense',expenseRoute)
+app.use('/api/v1/import',importRoute)
 app.use('/api/v1/budgets',budgetRoute)
+app.use('/api/v1/dashboard',dashboardRoute)
+app.use('/api/v1/export',exportRoute)
+app.use('/api/v1/goals',goalRoute)
 
 app.get("/",(req,res)=>{
     res.send("Wealthwise API Running");

@@ -1,0 +1,108 @@
+23-12-2025:
+1. authController: 
+    
+    Problems:
+    - Missing return statements after sending error responses causes code to continue execution leading to multiple responses or unexpected behavior
+    - Inconsistent response format across API - need standardized format for all success/error responses throughout backend for better frontend handling
+    
+    Missing from Problem Statement:
+    ❌ Email format validation - Not checking valid email pattern
+    ❌ Password strength validation - No minimum length or complexity check
+    
+    Changes made:
+    - authController.js: Added return statements in registerUser, changed token response format in loginUser to {token}, standardized error responses to {error: "..."} format, implemented resetPassword function, added email validation regex, added password minimum length check (6 characters)
+
+2. expenseController:
+    
+    Problems:
+    - Inconsistent response format using {"message":"..."} instead of {error:"..."}
+    - Unnecessary console.log statements in code
+    - Quoted object keys for responses
+    
+    Missing from Problem Statement:
+    (None - basic functionality implemented)
+    
+    Changes made:
+    - expenseController.js: Changed error response from {"message":"..."} to {error:"..."}, removed console.log statements, removed quotes from response object keys
+
+3. budgetController:
+    
+    Problems:
+    - Budget controller was missing userId field in both finding and creating budgets, causing budgets to not be user-specific
+    - Quoted object keys for responses
+    
+    Missing from Problem Statement:
+    ❌ Get all budgets endpoint - No way to fetch and display user's existing budgets
+    ❌ Get single budget by category - Cannot view specific budget details
+    ❌ Delete budget endpoint - No way to remove budgets
+    
+    Changes made:
+    - budgetController.js: Added userId to Budget.findOne() query and Budget.create() object, added getBudgets() to fetch all user budgets, getBudgetByCategory() to get specific budget, deleteBudget() to remove budget, removed quotes from response object keys
+    - Budget.js model: Added userId field with ObjectId reference to User collection
+    - budgetRoutes.js: Added GET /budgets, GET /budgets/:category, DELETE /budgets/:category routes, removed console.log statements
+
+4. dashboardController:
+    
+    Problems:
+    - Incomplete code - Function is not finished
+    - Variable scope error - exp is used outside forEach loop
+    - Missing logic - expensesByMonth is declared but never used
+    - No response sent - Function doesn't return any data
+    - Empty catch block - No error handling
+    - Wrong userId field - Should be req.user.id not req.user.userId
+    
+    Missing from Problem Statement:
+    ❌ Expenses by date/month - Declared but not implemented
+    ❌ Recent expenses list - Not implemented
+    ❌ Budget vs actual spending comparison - Not implemented
+    ❌ Data for graphs/charts visualization - Not implemented
+    
+    Changes made:
+    - dashboardController.js: Fixed variable scope error, corrected userId to req.user.id, implemented complete getSummary function with totalExpenses, expensesByCategory, expensesByMonth (last 6 months), recentExpenses (last 10), budgetComparison, and statistics for visualization
+
+5. exportController:
+    
+    Problems:
+    - File is completely empty - No implementation
+    
+    Missing from Problem Statement:
+    ❌ Export to Excel functionality - User Story 6 requires Excel export
+    ❌ Export to PDF functionality - User Story 6 requires PDF export
+    ❌ Export endpoints not created
+    
+    Changes made:
+    - exportController.js: Implemented exportToExcel() and exportToPDF() functions to export user expense data
+    - exportRoutes.js: Added GET /export/excel and GET /export/pdf routes with authentication
+    - package.json: Added exceljs and pdfkit packages for export functionality
+
+6. importController:
+    
+    Problems:
+    - File is completely empty - No implementation
+    
+    Missing from Problem Statement:
+    ❌ Bank account import functionality - User Story 3 requires importing expenses from bank
+    ❌ Auto-categorization of imported expenses
+    
+    Changes made:
+    - importController.js: Implemented importFromBank() to import transactions from bank CSV/JSON with auto-categorization
+    - importRoutes.js: Added POST /import/bank route with authentication
+    - categorize.js utility: Need to implement auto-categorization logic
+
+7. goalController (merged with reportController):
+    
+    Problems:
+    - Files were completely empty - No implementation
+    - User Story 7 has both Goals AND Reports - should be in one controller
+    
+    Missing from Problem Statement:
+    ❌ Financial goals creation and tracking - User Story 7
+    ❌ Custom reports with spending insights - User Story 7
+    ❌ Category reports, time-based reports, spending trends
+    
+    Changes made:
+    - goalController.js: Implemented createGoal(), getGoals(), updateGoalProgress(), deleteGoal() for goals management, and getCategoryReport(), getTimeBasedReport(), getSpendingTrends() for custom reports
+    - goalRoutes.js: Added goal routes (POST /, GET /, PUT /:goalId/progress, DELETE /:goalId) and report routes (GET /reports/category, GET /reports/time, GET /reports/trends)
+    - Goal.js model: Added userId and current_amount fields
+    - reportController.js & reportRoutes.js: Deprecated and merged into goalController
+    - app.js: Removed reportRoute, added importRoute and goalRoute

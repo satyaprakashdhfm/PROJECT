@@ -1,3 +1,11 @@
+/**
+ * User Story 2: Manual Expense Entry
+ * Description: As a user, I should be able to enter my daily expenses manually into the application.
+ * 
+ * Features:
+ * - addExpense() - Add new expense with amount, date, category, and description
+ */
+
 const Expense = require('../model/Expense')
 
 const Budget = require('../model/Budget')
@@ -7,13 +15,11 @@ addExpense = async (req,res) => {
         const {amount,date,description,category} = req.body
 
         if(!amount || !date || !description || !category) 
-            return res.status(400).json({"message":"All fields are required"})
+            return res.status(400).json({error:"All fields are required"})
 
         const expense = await Expense.create({
             user:req.user.id,
             amount,date,description,category});
-
-            console.log(expense)
 
         //calculating total spent in a category
         const total = await Expense.aggregate([
@@ -23,7 +29,6 @@ addExpense = async (req,res) => {
               totalSpent:{$sum:"$amount"}}}
         ])
 
-        console.log("h")
         const spent = total[0]?.totalSpent || 0; 
         const budget = await Budget.findOne({user:req.user.id,category});
 
@@ -32,10 +37,10 @@ addExpense = async (req,res) => {
             alert = `Budget exceeded for ${category}`;
         }
 
-         res.status(201).json({"message": "Expense added successfully",alert})
+         res.status(201).json({message: "Expense added successfully", alert})
     }
     catch(error){
-        res.status(400).json({"error": "Invalid request body"})
+        res.status(400).json({error: "Invalid request body"})
     }
 } 
 

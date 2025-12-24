@@ -54,7 +54,7 @@ export const authAPI = {
 
 // Expense API
 export const expenseAPI = {
-  getAll: () => request<{ expenses: any[] }>('/expense/all'),
+  getAll: () => request<{ expenses: any[] }>('/expense'),
   
   add: (expense: {
     amount: number;
@@ -69,51 +69,51 @@ export const expenseAPI = {
     }),
   
   delete: (id: string) =>
-    request(`/expense/delete/${id}`, {
+    request(`/expense/${id}`, {
       method: 'DELETE',
     }),
 };
 
 // Budget API
 export const budgetAPI = {
-  getAll: () => request<{ budgets: any[] }>('/budgets/all'),
+  getAll: () => request<{ budgets: any[] }>('/budgets'),
   
   create: (budget: { category: string; budget_amount: number }) =>
-    request('/budgets/create', {
+    request('/budgets/set', {
       method: 'POST',
       body: JSON.stringify(budget),
     }),
   
   update: (id: string, budget_amount: number) =>
-    request(`/budgets/update/${id}`, {
+    request(`/budgets/${id}`, {
       method: 'PUT',
       body: JSON.stringify({ budget_amount }),
     }),
   
   delete: (id: string) =>
-    request(`/budgets/delete/${id}`, {
+    request(`/budgets/${id}`, {
       method: 'DELETE',
     }),
 };
 
 // Goal API
 export const goalAPI = {
-  getAll: () => request<{ goals: any[] }>('/goals/all'),
+  getAll: () => request<{ goals: any[] }>('/goals'),
   
   create: (goal: { goal: string; target_amount: number }) =>
-    request('/goals/create', {
+    request('/goals', {
       method: 'POST',
       body: JSON.stringify(goal),
     }),
   
   update: (id: string, current_amount: number) =>
-    request(`/goals/update/${id}`, {
+    request(`/goals/${id}/progress`, {
       method: 'PUT',
-      body: JSON.stringify({ current_amount }),
+      body: JSON.stringify({ amount: current_amount }),
     }),
   
   delete: (id: string) =>
-    request(`/goals/delete/${id}`, {
+    request(`/goals/${id}`, {
       method: 'DELETE',
     }),
 };
@@ -124,7 +124,7 @@ export const dashboardAPI = {
     totalExpenses: number;
     categoryBreakdown: Array<{ category: string; total: number }>;
     recentExpenses: any[];
-  }>('/dashboard/stats'),
+  }>('/dashboard/summary'),
 };
 
 // Import API

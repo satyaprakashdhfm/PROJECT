@@ -28,8 +28,20 @@ export interface Goal {
 
 export interface DashboardStats {
   totalExpenses: number;
-  categoryBreakdown: Array<{ category: string; total: number }>;
+  expensesByCategory: { [key: string]: number };
+  expensesByMonth?: { [key: string]: number };
   recentExpenses: Expense[];
+  budgetComparison?: Array<{
+    category: string;
+    spent: number;
+    budget: number;
+    percentage: number;
+  }>;
+  statistics?: {
+    avgExpensePerDay: number;
+    highestExpenseDay: number;
+    lowestExpenseDay: number;
+  };
 }
 
 export const CATEGORIES = ['Food', 'Travel', 'Shopping', 'Bills', 'Other'];

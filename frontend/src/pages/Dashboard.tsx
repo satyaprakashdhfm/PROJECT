@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { dashboardAPI, removeToken } from '../api';
+import { dashboardAPI } from '../api';
 import { DashboardStats } from '../types';
+import Navigation from '../components/Navigation';
 
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     loadStats();
@@ -14,8 +13,8 @@ export default function Dashboard() {
 
   const loadStats = async () => {
     try {
-      const data = await dashboardAPI.getStats();
-      setStats(data);
+      const response: any = await dashboardAPI.getStats();
+      setStats(response.data || response);
     } catch (err) {
       console.error(err);
     } finally {
@@ -23,27 +22,11 @@ export default function Dashboard() {
     }
   };
 
-  const handleLogout = () => {
-    removeToken();
-    navigate('/login');
-  };
-
-  if (loading) {
-    return <div style={styles.loading}>Loading...</div>;
-  }
+  if (loading) return <div style={styles.loading}>Loading...</div>;
 
   return (
     <div style={styles.container}>
-      <header style={styles.header}>
-        <h1 style={styles.logo}>Wealthwise</h1>
-        <nav style={styles.nav}>
-          <button onClick={() => navigate('/dashboard')} style={styles.navBtn}>Dashboard</button>
-          <button onClick={() => navigate('/expenses')} style={styles.navBtn}>Expenses</button>
-          <button onClick={() => navigate('/budgets')} style={styles.navBtn}>Budgets</button>
-          <button onClick={() => navigate('/goals')} style={styles.navBtn}>Goals</button>
-          <button onClick={handleLogout} style={styles.logoutBtn}>Logout</button>
-        </nav>
-      </header>
+      <Navigation />
 
       <main style={styles.main}>
         <h2 style={styles.pageTitle}>Dashboard</h2>
@@ -51,22 +34,22 @@ export default function Dashboard() {
         <div style={styles.statsGrid}>
           <div style={styles.statCard}>
             <h3 style={styles.statTitle}>Total Expenses</h3>
-            <p style={styles.statValue}>₹{stats?.totalExpenses.toFixed(2) || '0.00'}</p>
+            <p style={styles.statValue}>₹{stats?.totalExpenses?.toFixed(2) || '0.00'}</p>
           </div>
 
           <div style={styles.statCard}>
             <h3 style={styles.statTitle}>Recent Expenses</h3>
-            <p style={styles.statValue}>{stats?.recentExpenses.length || 0}</p>
+            <p style={styles.statValue}>{stats?.recentExpenses?.length || 0}</p>
           </div>
         </div>
 
         <div style={styles.section}>
           <h3 style={styles.sectionTitle}>Category Breakdown</h3>
           <div style={styles.categoryList}>
-            {stats?.categoryBreakdown.map((cat) => (
-              <div key={cat.category} style={styles.categoryItem}>
-                <span style={styles.categoryName}>{cat.category}</span>
-                <span style={styles.categoryAmount}>₹{cat.total.toFixed(2)}</span>
+            {stats?.expensesByCategory && Object.entries(stats.expensesByCategory).map(([category, total]) => (
+              <div key={category} style={styles.categoryItem}>
+                <span style={styles.categoryName}>{category}</span>
+                <span style={styles.categoryAmount}>₹{(total as number).toFixed(2)}</span>
               </div>
             ))}
           </div>
@@ -75,7 +58,7 @@ export default function Dashboard() {
         <div style={styles.section}>
           <h3 style={styles.sectionTitle}>Recent Expenses</h3>
           <div style={styles.expenseList}>
-            {stats?.recentExpenses.slice(0, 5).map((exp) => (
+            {stats?.recentExpenses?.slice(0, 5).map((exp) => (
               <div key={exp._id} style={styles.expenseItem}>
                 <div>
                   <p style={styles.expenseDesc}>{exp.description}</p>
@@ -95,39 +78,6 @@ const styles: Record<string, React.CSSProperties> = {
   container: {
     minHeight: '100vh',
     background: '#f5f5f5',
-  },
-  header: {
-    background: 'white',
-    padding: '20px 40px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  logo: {
-    color: '#667eea',
-    margin: 0,
-  },
-  nav: {
-    display: 'flex',
-    gap: '10px',
-  },
-  navBtn: {
-    padding: '10px 20px',
-    background: 'transparent',
-    border: 'none',
-    cursor: 'pointer',
-    fontWeight: '500',
-    color: '#333',
-  },
-  logoutBtn: {
-    padding: '10px 20px',
-    background: '#667eea',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontWeight: '500',
   },
   main: {
     maxWidth: '1200px',

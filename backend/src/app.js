@@ -17,6 +17,23 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
+// Request logging middleware
+app.use((req, res, next) => {
+    console.log(`📍 ${req.method} ${req.originalUrl}`)
+    console.log('📦 Body:', JSON.stringify(req.body))
+    console.log('🔑 Headers:', req.headers.authorization ? 'Token Present' : 'No Token')
+    
+    // Capture response
+    const originalSend = res.send
+    res.send = function(data) {
+        console.log('✅ Response:', typeof data === 'string' ? data.substring(0, 200) : JSON.stringify(data).substring(0, 200))
+        console.log('---')
+        originalSend.call(this, data)
+    }
+    
+    next()
+})
+
 app.use('/api/v1/auth',authRoute) 
 app.use('/api/v1/expense',expenseRoute)
 app.use('/api/v1/import',importRoute)

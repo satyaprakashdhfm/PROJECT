@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { budgetAPI, removeToken } from '../api';
+import { budgetAPI } from '../api';
 import { Budget, CATEGORIES } from '../types';
+import Navigation from '../components/Navigation';
 
 export default function Budgets() {
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   const [category, setCategory] = useState('Food');
   const [amount, setAmount] = useState('');
@@ -18,8 +17,8 @@ export default function Budgets() {
 
   const loadBudgets = async () => {
     try {
-      const data = await budgetAPI.getAll();
-      setBudgets(data.budgets);
+      const response: any = await budgetAPI.getAll();
+      setBudgets(response.data || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -52,23 +51,9 @@ export default function Budgets() {
     }
   };
 
-  const handleLogout = () => {
-    removeToken();
-    navigate('/login');
-  };
-
   return (
     <div style={styles.container}>
-      <header style={styles.header}>
-        <h1 style={styles.logo}>Wealthwise</h1>
-        <nav style={styles.nav}>
-          <button onClick={() => navigate('/dashboard')} style={styles.navBtn}>Dashboard</button>
-          <button onClick={() => navigate('/expenses')} style={styles.navBtn}>Expenses</button>
-          <button onClick={() => navigate('/budgets')} style={styles.navBtn}>Budgets</button>
-          <button onClick={() => navigate('/goals')} style={styles.navBtn}>Goals</button>
-          <button onClick={handleLogout} style={styles.logoutBtn}>Logout</button>
-        </nav>
-      </header>
+      <Navigation />
 
       <main style={styles.main}>
         <div style={styles.titleRow}>
@@ -142,39 +127,6 @@ const styles: Record<string, React.CSSProperties> = {
   container: {
     minHeight: '100vh',
     background: '#f5f5f5',
-  },
-  header: {
-    background: 'white',
-    padding: '20px 40px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  logo: {
-    color: '#667eea',
-    margin: 0,
-  },
-  nav: {
-    display: 'flex',
-    gap: '10px',
-  },
-  navBtn: {
-    padding: '10px 20px',
-    background: 'transparent',
-    border: 'none',
-    cursor: 'pointer',
-    fontWeight: '500',
-    color: '#333',
-  },
-  logoutBtn: {
-    padding: '10px 20px',
-    background: '#667eea',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontWeight: '500',
   },
   main: {
     maxWidth: '1200px',

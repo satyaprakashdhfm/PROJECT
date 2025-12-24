@@ -22,160 +22,80 @@ export default function Dashboard() {
     }
   };
 
-  if (loading) return <div style={styles.loading}>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="d-flex align-items-center justify-content-center vh-100">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={styles.container}>
+    <div className="min-vh-100">
       <Navigation />
 
-      <main style={styles.main}>
-        <h2 style={styles.pageTitle}>Dashboard</h2>
+      <main className="container py-4" style={{ maxWidth: '1200px' }}>
+        <h2 className="mb-4">Dashboard</h2>
 
-        <div style={styles.statsGrid}>
-          <div style={styles.statCard}>
-            <h3 style={styles.statTitle}>Total Expenses</h3>
-            <p style={styles.statValue}>₹{stats?.totalExpenses?.toFixed(2) || '0.00'}</p>
-          </div>
-
-          <div style={styles.statCard}>
-            <h3 style={styles.statTitle}>Recent Expenses</h3>
-            <p style={styles.statValue}>{stats?.recentExpenses?.length || 0}</p>
-          </div>
-        </div>
-
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Category Breakdown</h3>
-          <div style={styles.categoryList}>
-            {stats?.expensesByCategory && Object.entries(stats.expensesByCategory).map(([category, total]) => (
-              <div key={category} style={styles.categoryItem}>
-                <span style={styles.categoryName}>{category}</span>
-                <span style={styles.categoryAmount}>₹{(total as number).toFixed(2)}</span>
+        {/* Stats Cards */}
+        <div className="row g-3 mb-4">
+          <div className="col-md-6">
+            <div className="card shadow-sm">
+              <div className="card-body">
+                <h6 className="card-subtitle text-muted mb-2">Total Expenses</h6>
+                <h2 className="text-primary mb-0" style={{ color: '#667eea' }}>
+                  ₹{stats?.totalExpenses?.toFixed(2) || '0.00'}
+                </h2>
               </div>
-            ))}
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="card shadow-sm">
+              <div className="card-body">
+                <h6 className="card-subtitle text-muted mb-2">Recent Expenses</h6>
+                <h2 className="text-primary mb-0" style={{ color: '#667eea' }}>
+                  {stats?.recentExpenses?.length || 0}
+                </h2>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Recent Expenses</h3>
-          <div style={styles.expenseList}>
-            {stats?.recentExpenses?.slice(0, 5).map((exp) => (
-              <div key={exp._id} style={styles.expenseItem}>
-                <div>
-                  <p style={styles.expenseDesc}>{exp.description}</p>
-                  <p style={styles.expenseMeta}>{exp.category} • {new Date(exp.date).toLocaleDateString()}</p>
+        {/* Category Breakdown */}
+        <div className="card shadow-sm mb-4">
+          <div className="card-body">
+            <h3 className="card-title h5 mb-3">Category Breakdown</h3>
+            <div className="d-flex flex-column gap-2">
+              {stats?.expensesByCategory && Object.entries(stats.expensesByCategory).map(([category, total]) => (
+                <div key={category} className="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                  <span className="fw-medium">{category}</span>
+                  <span className="fw-bold" style={{ color: '#667eea' }}>₹{(total as number).toFixed(2)}</span>
                 </div>
-                <p style={styles.expenseAmount}>₹{exp.amount.toFixed(2)}</p>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Expenses */}
+        <div className="card shadow-sm">
+          <div className="card-body">
+            <h3 className="card-title h5 mb-3">Recent Expenses</h3>
+            <div className="d-flex flex-column gap-2">
+              {stats?.recentExpenses?.slice(0, 5).map((exp) => (
+                <div key={exp._id} className="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                  <div>
+                    <p className="mb-1 fw-medium">{exp.description}</p>
+                    <p className="mb-0 small text-muted">{exp.category} • {new Date(exp.date).toLocaleDateString()}</p>
+                  </div>
+                  <span className="fw-bold" style={{ color: '#667eea' }}>₹{exp.amount.toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </main>
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    minHeight: '100vh',
-    background: '#f5f5f5',
-  },
-  main: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '40px 20px',
-  },
-  pageTitle: {
-    marginBottom: '30px',
-    color: '#333',
-  },
-  statsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: '20px',
-    marginBottom: '40px',
-  },
-  statCard: {
-    background: 'white',
-    padding: '30px',
-    borderRadius: '10px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-  },
-  statTitle: {
-    color: '#666',
-    fontSize: '14px',
-    margin: '0 0 10px 0',
-  },
-  statValue: {
-    color: '#667eea',
-    fontSize: '32px',
-    fontWeight: 'bold',
-    margin: 0,
-  },
-  section: {
-    background: 'white',
-    padding: '30px',
-    borderRadius: '10px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    marginBottom: '20px',
-  },
-  sectionTitle: {
-    marginTop: 0,
-    marginBottom: '20px',
-    color: '#333',
-  },
-  categoryList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-  },
-  categoryItem: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: '15px',
-    background: '#f9f9f9',
-    borderRadius: '5px',
-  },
-  categoryName: {
-    fontWeight: '500',
-    color: '#333',
-  },
-  categoryAmount: {
-    fontWeight: 'bold',
-    color: '#667eea',
-  },
-  expenseList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-  },
-  expenseItem: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: '15px',
-    background: '#f9f9f9',
-    borderRadius: '5px',
-  },
-  expenseDesc: {
-    margin: '0 0 5px 0',
-    fontWeight: '500',
-    color: '#333',
-  },
-  expenseMeta: {
-    margin: 0,
-    fontSize: '12px',
-    color: '#999',
-  },
-  expenseAmount: {
-    fontWeight: 'bold',
-    color: '#667eea',
-    margin: 0,
-  },
-  loading: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '100vh',
-    fontSize: '18px',
-    color: '#666',
-  },
-};

@@ -90,8 +90,8 @@ export const budgetAPI = {
       body: JSON.stringify({ budget_amount }),
     }),
   
-  delete: (id: string) =>
-    request(`/budgets/${id}`, {
+  delete: (category: string) =>
+    request(`/budgets/${category}`, {
       method: 'DELETE',
     }),
 };
@@ -106,10 +106,10 @@ export const goalAPI = {
       body: JSON.stringify(goal),
     }),
   
-  update: (id: string, current_amount: number) =>
+  update: (id: string, incrementAmount: number) =>
     request(`/goals/${id}/progress`, {
       method: 'PUT',
-      body: JSON.stringify({ amount: current_amount }),
+      body: JSON.stringify({ amount: incrementAmount }),
     }),
   
   delete: (id: string) =>

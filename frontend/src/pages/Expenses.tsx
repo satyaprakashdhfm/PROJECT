@@ -66,103 +66,126 @@ export default function Expenses() {
   };
 
   return (
-    <div style={styles.container}>
+    <div className="min-vh-100">
       <Navigation />
 
-      <main style={styles.main}>
-        <div style={styles.titleRow}>
-          <h2 style={styles.pageTitle}>Expenses</h2>
-          <button onClick={() => setShowForm(!showForm)} style={styles.addBtn}>
+      <main className="container py-4" style={{ maxWidth: '1200px' }}>
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h2 className="mb-0">Expenses</h2>
+          <button 
+            onClick={() => setShowForm(!showForm)} 
+            className="btn btn-primary"
+            style={{ backgroundColor: '#667eea', borderColor: '#667eea' }}
+          >
             {showForm ? 'Cancel' : '+ Add Expense'}
           </button>
         </div>
 
         {showForm && (
-          <form onSubmit={handleAddExpense} style={styles.form}>
-            <div style={styles.formGrid}>
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Amount (₹)</label>
-                <input
-                  type="number"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  style={styles.input}
-                  step="0.01"
-                  required
-                />
-              </div>
+          <div className="card shadow-sm mb-4">
+            <div className="card-body">
+              <form onSubmit={handleAddExpense}>
+                <div className="row g-3 mb-3">
+                  <div className="col-md-6 col-lg-4">
+                    <label className="form-label">Amount (₹)</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      step="0.01"
+                      required
+                    />
+                  </div>
 
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Date</label>
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  style={styles.input}
-                  required
-                />
-              </div>
+                  <div className="col-md-6 col-lg-4">
+                    <label className="form-label">Date</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                      required
+                    />
+                  </div>
 
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Category</label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  style={styles.input}
-                  required
-                >
-                  {CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-              </div>
+                  <div className="col-md-6 col-lg-4">
+                    <label className="form-label">Category</label>
+                    <select
+                      className="form-select"
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      required
+                    >
+                      {CATEGORIES.map((cat) => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
 
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Description</label>
-                <input
-                  type="text"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  style={styles.input}
-                  required
-                />
-              </div>
+                  <div className="col-md-6 col-lg-4">
+                    <label className="form-label">Description</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      required
+                    />
+                  </div>
 
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Merchant (Optional)</label>
-                <input
-                  type="text"
-                  value={merchant}
-                  onChange={(e) => setMerchant(e.target.value)}
-                  style={styles.input}
-                />
-              </div>
+                  <div className="col-md-6 col-lg-4">
+                    <label className="form-label">Merchant (Optional)</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={merchant}
+                      onChange={(e) => setMerchant(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#667eea', borderColor: '#667eea' }}>
+                  Add Expense
+                </button>
+              </form>
             </div>
-
-            <button type="submit" style={styles.submitBtn}>Add Expense</button>
-          </form>
+          </div>
         )}
 
-        <div style={styles.expenseList}>
+        <div className="d-flex flex-column gap-3">
           {loading ? (
-            <p>Loading...</p>
+            <div className="text-center py-5">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
           ) : expenses.length === 0 ? (
-            <p style={styles.emptyText}>No expenses yet. Add your first expense!</p>
+            <div className="text-center text-muted py-5">
+              No expenses yet. Add your first expense!
+            </div>
           ) : (
             expenses.map((exp) => (
-              <div key={exp._id} style={styles.expenseCard}>
-                <div style={styles.expenseInfo}>
-                  <h3 style={styles.expenseTitle}>{exp.description}</h3>
-                  <p style={styles.expenseMeta}>
-                    {exp.category} • {new Date(exp.date).toLocaleDateString()}
-                    {exp.merchant && ` • ${exp.merchant}`}
-                  </p>
-                </div>
-                <div style={styles.expenseActions}>
-                  <p style={styles.expenseAmount}>₹{exp.amount.toFixed(2)}</p>
-                  <button onClick={() => handleDelete(exp._id)} style={styles.deleteBtn}>
-                    Delete
-                  </button>
+              <div key={exp._id} className="card shadow-sm">
+                <div className="card-body d-flex justify-content-between align-items-center">
+                  <div className="flex-grow-1">
+                    <h5 className="card-title mb-1">{exp.description}</h5>
+                    <p className="card-text text-muted small mb-0">
+                      {exp.category} • {new Date(exp.date).toLocaleDateString()}
+                      {exp.merchant && ` • ${exp.merchant}`}
+                    </p>
+                  </div>
+                  <div className="d-flex align-items-center gap-3">
+                    <h4 className="mb-0 fw-bold" style={{ color: '#667eea' }}>
+                      ₹{exp.amount.toFixed(2)}
+                    </h4>
+                    <button 
+                      onClick={() => handleDelete(exp._id)} 
+                      className="btn btn-danger btn-sm"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             ))
@@ -172,124 +195,3 @@ export default function Expenses() {
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    minHeight: '100vh',
-    background: '#f5f5f5',
-  },
-  main: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '40px 20px',
-  },
-  titleRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '30px',
-  },
-  pageTitle: {
-    margin: 0,
-    color: '#333',
-  },
-  addBtn: {
-    padding: '10px 20px',
-    background: '#667eea',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontWeight: '500',
-  },
-  form: {
-    background: 'white',
-    padding: '30px',
-    borderRadius: '10px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    marginBottom: '30px',
-  },
-  formGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '20px',
-    marginBottom: '20px',
-  },
-  inputGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
-  label: {
-    fontWeight: '500',
-    color: '#333',
-    fontSize: '14px',
-  },
-  input: {
-    padding: '10px',
-    border: '1px solid #ddd',
-    borderRadius: '5px',
-    fontSize: '14px',
-  },
-  submitBtn: {
-    padding: '12px 24px',
-    background: '#667eea',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontWeight: '500',
-    fontSize: '16px',
-  },
-  expenseList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-  },
-  expenseCard: {
-    background: 'white',
-    padding: '20px',
-    borderRadius: '10px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  expenseInfo: {
-    flex: 1,
-  },
-  expenseTitle: {
-    margin: '0 0 5px 0',
-    color: '#333',
-  },
-  expenseMeta: {
-    margin: 0,
-    fontSize: '14px',
-    color: '#999',
-  },
-  expenseActions: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '20px',
-  },
-  expenseAmount: {
-    fontSize: '20px',
-    fontWeight: 'bold',
-    color: '#667eea',
-    margin: 0,
-  },
-  deleteBtn: {
-    padding: '8px 16px',
-    background: '#ff4444',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '14px',
-  },
-  emptyText: {
-    textAlign: 'center',
-    color: '#999',
-    padding: '40px',
-  },
-};

@@ -42,11 +42,16 @@ export default function Goals() {
     }
   };
 
-  const handleUpdateProgress = async (id: string) => {
-    const newAmount = prompt('Enter current amount:');
+  const handleUpdateProgress = async (id: string, currentAmount: number) => {
+    const newAmount = prompt(`Current progress: ₹${currentAmount.toFixed(2)}\nEnter amount to ADD:`);
     if (!newAmount) return;
+    const incrementAmount = parseFloat(newAmount);
+    if (isNaN(incrementAmount) || incrementAmount <= 0) {
+      alert('Please enter a valid positive amount');
+      return;
+    }
     try {
-      await goalAPI.update(id, parseFloat(newAmount));
+      await goalAPI.update(id, incrementAmount);
       loadGoals();
     } catch (err: any) {
       alert(err.message);
@@ -68,78 +73,112 @@ export default function Goals() {
   };
 
   return (
-    <div style={styles.container}>
+    <div className="min-vh-100">
       <Navigation />
 
-      <main style={styles.main}>
-        <div style={styles.titleRow}>
-          <h2 style={styles.pageTitle}>Financial Goals</h2>
-          <button onClick={() => setShowForm(!showForm)} style={styles.addBtn}>
+      <main className="container py-4" style={{ maxWidth: '1200px' }}>
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h2 className="mb-0">Financial Goals</h2>
+          <button 
+            onClick={() => setShowForm(!showForm)} 
+            className="btn btn-primary"
+            style={{ backgroundColor: '#667eea', borderColor: '#667eea' }}
+          >
             {showForm ? 'Cancel' : '+ Add Goal'}
           </button>
         </div>
 
         {showForm && (
-          <form onSubmit={handleCreate} style={styles.form}>
-            <div style={styles.formGrid}>
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Goal Name</label>
-                <input
-                  type="text"
-                  value={goalName}
-                  onChange={(e) => setGoalName(e.target.value)}
-                  style={styles.input}
-                  placeholder="e.g., Save for vacation"
-                  required
-                />
-              </div>
-
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Target Amount (₹)</label>
-                <input
-                  type="number"
-                  value={targetAmount}
-                  onChange={(e) => setTargetAmount(e.target.value)}
-                  style={styles.input}
-                  step="0.01"
-                  required
-                />
-              </div>
-            </div>
-
-            <button type="submit" style={styles.submitBtn}>Create Goal</button>
-          </form>
-        )}
-
-        <div style={styles.goalList}>
-          {loading ? (
-            <p>Loading...</p>
-          ) : goals.length === 0 ? (
-            <p style={styles.emptyText}>No goals yet. Create your first financial goal!</p>
-          ) : (
-            goals.map((goal) => (
-              <div key={goal._id} style={styles.goalCard}>
-                <div style={styles.goalInfo}>
-                  <h3 style={styles.goalTitle}>{goal.goal}</h3>
-                  <div style={styles.progressBar}>
-                    <div
-                      style={{
-                        ...styles.progressFill,
-                        width: `${Math.min(getProgress(goal), 100)}%`,
-                      }}
+          <div className="card shadow-sm mb-4">
+            <div className="card-body">
+              <form onSubmit={handleCreate}>
+                <div className="row g-3 mb-3">
+                  <div className="col-md-6">
+                    <label className="form-label">Goal Name</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={goalName}
+                      onChange={(e) => setGoalName(e.target.value)}
+                      placeholder="e.g., Save for vacation"
+                      required
                     />
                   </div>
-                  <p style={styles.progressText}>
-                    ₹{goal.current_amount.toFixed(2)} / ₹{goal.target_amount.toFixed(2)} ({getProgress(goal).toFixed(1)}%)
-                  </p>
+
+                  <div className="col-md-6">
+                    <label className="form-label">Target Amount (₹)</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={targetAmount}
+                      onChange={(e) => setTargetAmount(e.target.value)}
+                      step="0.01"
+                      required
+                    />
+                  </div>
                 </div>
-                <div style={styles.goalActions}>
-                  <button onClick={() => handleUpdateProgress(goal._id)} style={styles.updateBtn}>
-                    Update
-                  </button>
-                  <button onClick={() => handleDelete(goal._id)} style={styles.deleteBtn}>
-                    Delete
-                  </button>
+
+                <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#667eea', borderColor: '#667eea' }}>
+                  Create Goal
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+        <div className="d-flex flex-column gap-3">
+          {loading ? (
+            <div className="text-center py-5">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          ) : goals.length === 0 ? (
+            <div className="text-center text-muted py-5">
+              No goals yet. Create your first financial goal!
+            </div>
+          ) : (
+            goals.map((goal) => (
+              <div key={goal._id} className="card shadow-sm">
+                <div className="card-body">
+                  <div className="d-flex justify-content-between align-items-start mb-3">
+                    <h5 className="card-title mb-0">{goal.goal}</h5>
+                    <div className="d-flex gap-2">
+                      <button 
+                        onClick={() => handleUpdateProgress(goal._id, goal.current_amount)} 
+                        className="btn btn-primary btn-sm"
+                        style={{ backgroundColor: '#667eea', borderColor: '#667eea' }}
+                      >
+                        Update
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(goal._id)} 
+                        className="btn btn-danger btn-sm"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="progress mb-2" style={{ height: '24px' }}>
+                    <div 
+                      className="progress-bar" 
+                      role="progressbar" 
+                      style={{ 
+                        width: `${Math.min(getProgress(goal), 100)}%`,
+                        backgroundColor: '#667eea'
+                      }}
+                      aria-valuenow={getProgress(goal)} 
+                      aria-valuemin={0} 
+                      aria-valuemax={100}
+                    >
+                      {getProgress(goal).toFixed(1)}%
+                    </div>
+                  </div>
+
+                  <p className="text-muted mb-0 small">
+                    ₹{goal.current_amount.toFixed(2)} / ₹{goal.target_amount.toFixed(2)}
+                  </p>
                 </div>
               </div>
             ))
@@ -149,141 +188,3 @@ export default function Goals() {
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    minHeight: '100vh',
-    background: '#f5f5f5',
-  },
-  main: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '40px 20px',
-  },
-  titleRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '30px',
-  },
-  pageTitle: {
-    margin: 0,
-    color: '#333',
-  },
-  addBtn: {
-    padding: '10px 20px',
-    background: '#667eea',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontWeight: '500',
-  },
-  form: {
-    background: 'white',
-    padding: '30px',
-    borderRadius: '10px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    marginBottom: '30px',
-  },
-  formGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '20px',
-    marginBottom: '20px',
-  },
-  inputGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
-  label: {
-    fontWeight: '500',
-    color: '#333',
-    fontSize: '14px',
-  },
-  input: {
-    padding: '10px',
-    border: '1px solid #ddd',
-    borderRadius: '5px',
-    fontSize: '14px',
-  },
-  submitBtn: {
-    padding: '12px 24px',
-    background: '#667eea',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontWeight: '500',
-    fontSize: '16px',
-  },
-  goalList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-  },
-  goalCard: {
-    background: 'white',
-    padding: '20px',
-    borderRadius: '10px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  goalInfo: {
-    flex: 1,
-    marginRight: '20px',
-  },
-  goalTitle: {
-    margin: '0 0 15px 0',
-    color: '#333',
-  },
-  progressBar: {
-    width: '100%',
-    height: '10px',
-    background: '#e0e0e0',
-    borderRadius: '5px',
-    overflow: 'hidden',
-    marginBottom: '10px',
-  },
-  progressFill: {
-    height: '100%',
-    background: '#667eea',
-    transition: 'width 0.3s ease',
-  },
-  progressText: {
-    margin: 0,
-    fontSize: '14px',
-    color: '#666',
-  },
-  goalActions: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px',
-  },
-  updateBtn: {
-    padding: '8px 16px',
-    background: '#667eea',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '14px',
-  },
-  deleteBtn: {
-    padding: '8px 16px',
-    background: '#ff4444',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '14px',
-  },
-  emptyText: {
-    textAlign: 'center',
-    color: '#999',
-    padding: '40px',
-  },
-};

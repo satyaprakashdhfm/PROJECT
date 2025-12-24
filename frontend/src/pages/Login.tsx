@@ -26,123 +26,63 @@ export default function Login() {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>Wealthwise</h1>
-        <h2 style={styles.subtitle}>Login</h2>
-        
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={styles.input}
-              required
-            />
-          </div>
+    <div className="auth-gradient d-flex align-items-center justify-content-center">
+      <div className="card shadow-lg" style={{ maxWidth: '400px', width: '100%' }}>
+        <div className="card-body p-4">
+          <h1 className="brand-logo text-center mb-2">Wealthwise</h1>
+          <h2 className="text-center h4 mb-4">Login</h2>
+          
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label className="form-label">Email</label>
+              <input
+                type="email"
+                className="form-control"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
 
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={styles.input}
-              required
-            />
-          </div>
+            <div className="mb-3">
+              <label className="form-label">Password</label>
+              <input
+                type="password"
+                className="form-control"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
 
-          {error && <div style={styles.error}>{error}</div>}
+            {error && (
+              <div className="alert alert-danger" role="alert">
+                {error}
+              </div>
+            )}
 
-          <button type="submit" style={styles.button} disabled={loading}>
-            {loading ? 'Loading...' : 'Login'}
-          </button>
-        </form>
+            <button 
+              type="submit" 
+              className="btn btn-primary w-100 fw-semibold" 
+              disabled={loading}
+              style={{ backgroundColor: '#667eea', borderColor: '#667eea' }}
+            >
+              {loading ? 'Loading...' : 'Login'}
+            </button>
+          </form>
 
-        <p style={styles.link}>
-          Don't have an account?{' '}
-          <span onClick={() => navigate('/signup')} style={styles.linkText}>
-            Sign up
-          </span>
-        </p>
+          <p className="text-center mt-3 mb-0">
+            Don't have an account?{' '}
+            <span 
+              onClick={() => navigate('/signup')} 
+              className="text-primary fw-semibold" 
+              style={{ cursor: 'pointer' }}
+            >
+              Sign up
+            </span>
+          </p>
+        </div>
       </div>
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-  },
-  card: {
-    background: 'white',
-    padding: '40px',
-    borderRadius: '10px',
-    boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
-    width: '100%',
-    maxWidth: '400px',
-  },
-  title: {
-    textAlign: 'center',
-    color: '#667eea',
-    marginBottom: '10px',
-  },
-  subtitle: {
-    textAlign: 'center',
-    color: '#333',
-    marginBottom: '30px',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
-  },
-  inputGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
-  label: {
-    fontWeight: '500',
-    color: '#333',
-  },
-  input: {
-    padding: '12px',
-    border: '1px solid #ddd',
-    borderRadius: '5px',
-    fontSize: '14px',
-  },
-  button: {
-    padding: '12px',
-    background: '#667eea',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    fontSize: '16px',
-    fontWeight: '600',
-    cursor: 'pointer',
-  },
-  error: {
-    padding: '10px',
-    background: '#fee',
-    color: '#c33',
-    borderRadius: '5px',
-    fontSize: '14px',
-  },
-  link: {
-    textAlign: 'center',
-    marginTop: '20px',
-    color: '#666',
-  },
-  linkText: {
-    color: '#667eea',
-    cursor: 'pointer',
-    fontWeight: '600',
-  },
-};

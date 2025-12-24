@@ -10,51 +10,19 @@ export default function Navigation() {
   };
 
   return (
-    <header style={styles.header}>
-      <h1 style={styles.logo}>Wealthwise</h1>
-      <nav style={styles.nav}>
-        <button onClick={() => navigate('/dashboard')} style={styles.navBtn}>Dashboard</button>
-        <button onClick={() => navigate('/expenses')} style={styles.navBtn}>Expenses</button>
-        <button onClick={() => navigate('/budgets')} style={styles.navBtn}>Budgets</button>
-        <button onClick={() => navigate('/goals')} style={styles.navBtn}>Goals</button>
-        <button onClick={handleLogout} style={styles.logoutBtn}>Logout</button>
-      </nav>
-    </header>
+    <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+      <div className="container-fluid px-4">
+        <span className="navbar-brand brand-logo mb-0 h1">Wealthwise</span>
+        <div className="d-flex gap-2">
+          <button onClick={() => navigate('/dashboard')} className="btn btn-link text-decoration-none">Dashboard</button>
+          <button onClick={() => navigate('/expenses')} className="btn btn-link text-decoration-none">Expenses</button>
+          <button onClick={() => navigate('/budgets')} className="btn btn-link text-decoration-none">Budgets</button>
+          <button onClick={() => navigate('/goals')} className="btn btn-link text-decoration-none">Goals</button>
+          <button onClick={handleLogout} className="btn btn-primary" style={{ backgroundColor: '#667eea', borderColor: '#667eea' }}>
+            Logout
+          </button>
+        </div>
+      </div>
+    </nav>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  header: {
-    background: 'white',
-    padding: '20px 40px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  logo: {
-    color: '#667eea',
-    margin: 0,
-  },
-  nav: {
-    display: 'flex',
-    gap: '10px',
-  },
-  navBtn: {
-    padding: '10px 20px',
-    background: 'transparent',
-    border: 'none',
-    cursor: 'pointer',
-    fontWeight: '500',
-    color: '#333',
-  },
-  logoutBtn: {
-    padding: '10px 20px',
-    background: '#667eea',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontWeight: '500',
-  },
-};

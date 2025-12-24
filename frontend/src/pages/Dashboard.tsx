@@ -22,6 +22,12 @@ export default function Dashboard() {
     }
   };
 
+  // Get chart colors
+  const getCategoryColor = (index: number) => {
+    const colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b', '#fa709a'];
+    return colors[index % colors.length];
+  };
+
   if (loading) {
     return (
       <div className="d-flex align-items-center justify-content-center vh-100">
@@ -64,9 +70,149 @@ export default function Dashboard() {
         </div>
 
         {/* Category Breakdown */}
+        <div className="row g-3 mb-4">
+          {/* Bar Chart */}
+          <div className="col-lg-7">
+            <div className="card shadow-sm">
+              <div className="card-body">
+                <h3 className="card-title h5 mb-4">Category Expenses (Bar Chart)</h3>
+                {stats?.expensesByCategory && Object.keys(stats.expensesByCategory).length > 0 ? (
+                  <div style={{ position: 'relative', height: '300px' }}>
+                    <svg width="100%" height="100%" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid meet">
+                      {/* Y-axis and X-axis */}
+                      <line x1="50" y1="20" x2="50" y2="250" stroke="#ccc" strokeWidth="2" />
+                      <line x1="50" y1="250" x2="580" y2="250" stroke="#ccc" strokeWidth="2" />
+                      
+                      {/* Bars */}
+                      {Object.entries(stats.expensesByCategory).map(([category, total], index) => {
+                        const maxValue = Math.max(...Object.values(stats.expensesByCategory || {}));
+                        const barHeight = ((total as number) / maxValue) * 200;
+                        const barWidth = 80;
+                        const x = 80 + index * 120;
+                        const y = 250 - barHeight;
+                        const color = getCategoryColor(index);
+                        
+                        return (
+                          <g key={category}>
+                            {/* Bar */}
+                            <rect
+                              x={x}
+                              y={y}
+                              width={barWidth}
+                              height={barHeight}
+                              fill={color}
+                              opacity="0.8"
+                              rx="4"
+                            />
+                            {/* Value on top */}
+                            <text
+                              x={x + barWidth / 2}
+                              y={y - 5}
+                              textAnchor="middle"
+                              fontSize="12"
+                              fill="#333"
+                              fontWeight="600"
+                            >
+                              ₹{(total as number).toFixed(0)}
+                            </text>
+                            {/* Category label */}
+                            <text
+                              x={x + barWidth / 2}
+                              y={270}
+                              textAnchor="middle"
+                              fontSize="12"
+                              fill="#666"
+                            >
+                              {category}
+                            </text>
+                          </g>
+                        );
+                      })}
+                    </svg>
+                  </div>
+                ) : (
+                  <p className="text-muted text-center">No expense data available</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Pie Chart */}
+          <div className="col-lg-5">
+            <div className="card shadow-sm">
+              <div className="card-body">
+                <h3 className="card-title h5 mb-4">Category Distribution (Pie Chart)</h3>
+                {stats?.expensesByCategory && Object.keys(stats.expensesByCategory).length > 0 ? (
+                  <div style={{ position: 'relative', height: '300px' }}>
+                    <svg width="100%" height="100%" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet">
+                      {(() => {
+                        const total = Object.values(stats.expensesByCategory || {}).reduce((a, b) => a + (b as number), 0);
+                        let currentAngle = -90;
+                        const centerX = 200;
+                        const centerY = 150;
+                        const radius = 100;
+                        
+                        return Object.entries(stats.expensesByCategory).map(([category, value], index) => {
+                          const percentage = ((value as number) / total) * 100;
+                          const angle = (percentage / 100) * 360;
+                          const startAngle = currentAngle;
+                          const endAngle = currentAngle + angle;
+                          
+                          const x1 = centerX + radius * Math.cos((startAngle * Math.PI) / 180);
+                          const y1 = centerY + radius * Math.sin((startAngle * Math.PI) / 180);
+                          const x2 = centerX + radius * Math.cos((endAngle * Math.PI) / 180);
+                          const y2 = centerY + radius * Math.sin((endAngle * Math.PI) / 180);
+                          
+                          const largeArc = angle > 180 ? 1 : 0;
+                          const path = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+                          
+                          currentAngle = endAngle;
+                          const color = getCategoryColor(index);
+                          
+                          return (
+                            <g key={category}>
+                              <path d={path} fill={color} opacity="0.8" stroke="white" strokeWidth="2" />
+                            </g>
+                          );
+                        });
+                      })()}
+                    </svg>
+                    {/* Legend */}
+                    <div className="mt-3">
+                      {Object.entries(stats.expensesByCategory).map(([category, value], index) => {
+                        const total = Object.values(stats.expensesByCategory || {}).reduce((a, b) => a + (b as number), 0);
+                        const percentage = ((value as number) / total) * 100;
+                        return (
+                          <div key={category} className="d-flex align-items-center mb-2">
+                            <div
+                              style={{
+                                width: '16px',
+                                height: '16px',
+                                backgroundColor: getCategoryColor(index),
+                                borderRadius: '3px',
+                                marginRight: '8px'
+                              }}
+                            />
+                            <span className="small">
+                              {category}: ₹{(value as number).toFixed(0)} ({percentage.toFixed(1)}%)
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-muted text-center">No expense data available</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Category List */}
         <div className="card shadow-sm mb-4">
           <div className="card-body">
-            <h3 className="card-title h5 mb-3">Category Breakdown</h3>
+            <h3 className="card-title h5 mb-3">Category Summary</h3>
             <div className="d-flex flex-column gap-2">
               {stats?.expensesByCategory && Object.entries(stats.expensesByCategory).map(([category, total]) => (
                 <div key={category} className="d-flex justify-content-between align-items-center p-3 bg-light rounded">

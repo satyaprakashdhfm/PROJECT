@@ -32,7 +32,7 @@ export default function Expenses() {
   const handleAddExpense = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await expenseAPI.add({
+      const response: any = await expenseAPI.add({
         amount: parseFloat(amount),
         date,
         category,
@@ -42,6 +42,11 @@ export default function Expenses() {
       setShowForm(false);
       resetForm();
       loadExpenses();
+      
+      // Show budget alert if exceeded
+      if (response.alert) {
+        alert(`⚠️ ${response.alert}`);
+      }
     } catch (err: any) {
       alert(err.message);
     }

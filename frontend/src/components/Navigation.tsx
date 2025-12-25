@@ -7,10 +7,11 @@ export default function Navigation() {
   const handleLogout = async () => {
     try {
       await authAPI.logout();
-      navigate('/login');
+      // Force page reload to clear auth state
+      window.location.href = '/login';
     } catch (err) {
       console.error('Logout error:', err);
-      navigate('/login');
+      window.location.href = '/login';
     }
   };
 

@@ -28,8 +28,8 @@ export default function Signup() {
 
     try {
       await authAPI.signup(email, password);
-      // Cookie is set automatically, redirect to dashboard
-      navigate('/dashboard');
+      // Cookie is set automatically, force reload to trigger auth check
+      window.location.href = '/dashboard';
     } catch (err: any) {
       setError(err.message);
     } finally {

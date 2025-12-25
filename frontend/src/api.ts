@@ -43,6 +43,11 @@ export const authAPI = {
     request('/auth/logout', {
       method: 'POST',
     }),
+  
+  verify: () =>
+    request<{ authenticated: boolean; user?: { id: string; email: string } }>('/auth/verify', {
+      method: 'GET',
+    }),
 };
 
 // Expense API

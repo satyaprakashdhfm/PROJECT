@@ -16,7 +16,8 @@ export default function Login() {
 
     try {
       await authAPI.login(email, password);
-      navigate('/dashboard');
+      // Force a page reload to trigger auth check in App.tsx
+      window.location.href = '/dashboard';
     } catch (err: any) {
       setError(err.message);
     } finally {

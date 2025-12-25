@@ -120,3 +120,19 @@ exports.logoutUser = (req, res) => {
     });
     res.status(200).json({message: "Logout successful"});
 }
+
+// Verify if user is authenticated (for protected routes)
+exports.verifyAuth = async (req, res) => {
+    try {
+        // If middleware passed, user is authenticated
+        res.status(200).json({
+            authenticated: true,
+            user: {
+                id: req.user.id,
+                email: req.user.email
+            }
+        });
+    } catch (error) {
+        res.status(401).json({authenticated: false});
+    }
+}

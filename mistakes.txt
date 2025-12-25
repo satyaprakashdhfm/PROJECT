@@ -264,7 +264,7 @@
     - Cookie set correctly but App.tsx PrivateRoute checking wrong storage
     - Caused infinite login loop - users couldn't access dashboard after successful login
     
-    Changes made:
+    Changes made: 
     Backend:
     - authController.js: Added verifyAuth() endpoint to validate cookie and return user info
     - authRoutes.js: Added GET /auth/verify route with protect middleware

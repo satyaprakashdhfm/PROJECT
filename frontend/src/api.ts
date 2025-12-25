@@ -9,10 +9,6 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   };
 
   const fullUrl = `${API_BASE_URL}${endpoint}`;
-  console.log(`[API Request] ${options.method || 'GET'} ${fullUrl}`);
-  if (options.body) {
-    console.log('[API Request] Body:', options.body);
-  }
 
   const response = await fetch(fullUrl, {
     ...options,
@@ -20,13 +16,9 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     credentials: 'include', // Important: Include cookies in requests
   });
 
-  console.log(`[API Response] Status: ${response.status} ${response.statusText}`);
-
   const data = await response.json();
-  console.log('[API Response] Data:', data);
 
   if (!response.ok) {
-    console.error('[API Error]', data.error || 'Something went wrong');
     throw new Error(data.error || 'Something went wrong');
   }
 
@@ -69,13 +61,10 @@ export const expenseAPI = {
       body: JSON.stringify(expense),
     }),
   
-  delete: (id: string) => {
-    console.log('[API] Expense delete called - ID:', id);
-    console.log('[API] Full URL:', `${API_BASE_URL}/expense/${id}`);
-    return request(`/expense/${id}`, {
+  delete: (id: string) =>
+    request(`/expense/${id}`, {
       method: 'DELETE',
-    });
-  },
+    }),
 };
 
 // Budget API
@@ -94,13 +83,10 @@ export const budgetAPI = {
       body: JSON.stringify({ budget_amount }),
     }),
   
-  delete: (category: string) => {
-    console.log('[API] Budget delete called - Category:', category);
-    console.log('[API] Full URL:', `${API_BASE_URL}/budgets/${category}`);
-    return request(`/budgets/${category}`, {
+  delete: (category: string) =>
+    request(`/budgets/${category}`, {
       method: 'DELETE',
-    });
-  },
+    }),
 };
 
 // Goal API
@@ -113,22 +99,16 @@ export const goalAPI = {
       body: JSON.stringify(goal),
     }),
   
-  update: (id: string, incrementAmount: number) => {
-    console.log('[API] Goal update called - ID:', id, 'Amount:', incrementAmount);
-    console.log('[API] Full URL:', `${API_BASE_URL}/goals/${id}/progress`);
-    return request(`/goals/${id}/progress`, {
+  update: (id: string, incrementAmount: number) =>
+    request(`/goals/${id}/progress`, {
       method: 'PUT',
       body: JSON.stringify({ amount: incrementAmount }),
-    });
-  },
+    }),
   
-  delete: (id: string) => {
-    console.log('[API] Goal delete called - ID:', id);
-    console.log('[API] Full URL:', `${API_BASE_URL}/goals/${id}`);
-    return request(`/goals/${id}`, {
+  delete: (id: string) =>
+    request(`/goals/${id}`, {
       method: 'DELETE',
-    });
-  },
+    }),
 };
 
 // Dashboard API

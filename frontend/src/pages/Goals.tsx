@@ -15,6 +15,7 @@ export default function Goals() {
   const [reportType, setReportType] = useState('category');
   const [reportData, setReportData] = useState<any>(null);
   const [loadingReport, setLoadingReport] = useState(false);
+  const [timePeriod, setTimePeriod] = useState('monthly'); // For time-based reports
 
   useEffect(() => {
     loadGoals();
@@ -22,8 +23,8 @@ export default function Goals() {
   }, []);
 
   useEffect(() => {
-    loadReport(); // Reload when report type changes
-  }, [reportType]);
+    loadReport(); // Reload when report type or time period changes
+  }, [reportType, timePeriod]);
 
   const loadGoals = async () => {
     try {
@@ -53,7 +54,6 @@ export default function Goals() {
   };
 
   const handleUpdateProgress = async (id: string, currentAmount: number) => {
-    console.log('Update clicked:', id, currentAmount);
     const newAmount = prompt(`Current progress: ₹${currentAmount.toFixed(2)}\nEnter amount to ADD:`);
     if (!newAmount) return;
     const incrementAmount = parseFloat(newAmount);
@@ -62,7 +62,6 @@ export default function Goals() {
       return;
     }
     try {
-      console.log('Calling update API:', id, incrementAmount);
       await goalAPI.update(id, incrementAmount);
       loadGoals();
     } catch (err: any) {
@@ -71,9 +70,7 @@ export default function Goals() {
   };
 
   const handleDelete = async (id: string) => {
-    console.log('Delete clicked:', id);
     try {
-      console.log('Calling delete API:', id);
       await goalAPI.delete(id);
       loadGoals();
     } catch (err: any) {
@@ -88,14 +85,27 @@ export default function Goals() {
   const loadReport = async () => {
     setLoadingReport(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/v1/goals/reports/${reportType}`, {
+      let url = `http://localhost:3000/api/v1/goals/reports/${reportType}`;
+      
+      // Add period query param for time-based reports
+      if (reportType === 'time') {
+        url += `?period=${timePeriod}`;
+      }
+      
+      const response = await fetch(url, {
         credentials: 'include'
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
-      console.log('Report data:', data); // Debug log
+      console.log('Report data received:', data);
       setReportData(data);
     } catch (err) {
       console.error('Report error:', err);
+      setReportData(null);
     } finally {
       setLoadingReport(false);
     }
@@ -218,7 +228,20 @@ export default function Goals() {
 
                   {reportType === 'time' && reportData && reportData.data && (
                     <div>
-                      <h5 className="mb-3">Monthly Spending Breakdown</h5>
+                      <div className="mb-3">
+                        <label className="form-label">Time Period</label>
+                        <select
+                          className="form-select"
+                          value={timePeriod}
+                          onChange={(e) => setTimePeriod(e.target.value)}
+                        >
+                          <option value="daily">Daily</option>
+                          <option value="weekly">Weekly</option>
+                          <option value="monthly">Monthly</option>
+                        </select>
+                      </div>
+                      
+                      <h5 className="mb-3">{timePeriod.charAt(0).toUpperCase() + timePeriod.slice(1)} Spending Breakdown</h5>
                       {Object.keys(reportData.data).length === 0 ? (
                         <p className="text-muted">No expense data available yet.</p>
                       ) : (
@@ -235,8 +258,8 @@ export default function Goals() {
                               {Object.entries(reportData.data).map(([period, data]: [string, any]) => (
                                 <tr key={period}>
                                   <td>{period}</td>
-                                  <td className="fw-bold">₹{data.total.toFixed(2)}</td>
-                                  <td>{data.count}</td>
+                                  <td className="fw-bold">₹{data?.total?.toFixed(2) || '0.00'}</td>
+                                  <td>{data?.count || 0}</td>
                                 </tr>
                               ))}
                             </tbody>

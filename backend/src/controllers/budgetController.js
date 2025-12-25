@@ -84,9 +84,7 @@ const deleteBudget = async(req,res)=>{
     const {category} = req.params
 
     try{
-        console.log('📍 [Budget Controller] Delete budget')
-        console.log('   Category:', category)
-        console.log('   User ID:', req.user.id)
+        console.log('DELETE /api/v1/budgets/:category')
 
         const budget = await Budget.findOneAndDelete({
             userId: req.user.id,
@@ -94,16 +92,12 @@ const deleteBudget = async(req,res)=>{
         })
 
         if(!budget) {
-            console.log('   ❌ Error: Budget not found')
             return res.status(404).json({error: "Budget not found"})
         }
-
-        console.log('   ✅ Budget deleted for category:', category)
 
         res.status(200).json({message: "Budget deleted successfully"})
     }
     catch(error){
-        console.log('   ❌ Exception:', error.message)
         res.status(500).json({error: "Failed to delete budget"})
     }
 }

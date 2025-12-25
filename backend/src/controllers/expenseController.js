@@ -139,23 +139,17 @@ const deleteExpense = async (req,res) => {
     try{
         const {id} = req.params
         
-        console.log('📍 [Expense Controller] Delete expense')
-        console.log('   Expense ID:', id)
-        console.log('   User ID:', req.user.id)
+        console.log('DELETE /api/v1/expense/:id')
         
         const expense = await Expense.findOneAndDelete({_id: id, user: req.user.id})
         
         if(!expense) {
-            console.log('   ❌ Error: Expense not found')
             return res.status(404).json({error: "Expense not found"})
         }
-        
-        console.log('   ✅ Expense deleted:', expense.description)
         
         res.status(200).json({message: "Expense deleted successfully"})
     }
     catch(error){
-        console.log('   ❌ Exception:', error.message)
         res.status(500).json({error: "Failed to delete expense"})
     }
 }

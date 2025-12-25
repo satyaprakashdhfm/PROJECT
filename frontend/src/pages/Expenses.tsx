@@ -71,14 +71,10 @@ export default function Expenses() {
   };
 
   const handleDelete = async (id: string) => {
-    console.log('[Expenses] Delete button clicked - ID:', id);
     try {
-      console.log('[Expenses] Calling delete API for ID:', id);
       await expenseAPI.delete(id);
-      console.log('[Expenses] Delete successful, reloading expenses');
       loadExpenses();
     } catch (err: any) {
-      console.error('[Expenses] Delete error:', err);
       alert(err.message);
     }
   };

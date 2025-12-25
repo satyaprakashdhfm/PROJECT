@@ -6,7 +6,7 @@ import Navigation from '../components/Navigation';
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({ category: '', startDate: '', endDate: '' });
+  const [filters, setFilters] = useState({ startDate: '', endDate: '' });
 
   useEffect(() => {
     loadStats();
@@ -15,7 +15,6 @@ export default function Dashboard() {
   const loadStats = async () => {
     try {
       const params = new URLSearchParams();
-      if (filters.category) params.append('category', filters.category);
       if (filters.startDate) params.append('startDate', filters.startDate);
       if (filters.endDate) params.append('endDate', filters.endDate);
       
@@ -79,22 +78,7 @@ export default function Dashboard() {
         <div className="card shadow-sm mb-4">
           <div className="card-body">
             <div className="row g-3">
-              <div className="col-md-4">
-                <label className="form-label">Category</label>
-                <select 
-                  className="form-select"
-                  value={filters.category}
-                  onChange={(e) => setFilters({...filters, category: e.target.value})}
-                >
-                  <option value="">All Categories</option>
-                  <option value="Food">Food</option>
-                  <option value="Travel">Travel</option>
-                  <option value="Shopping">Shopping</option>
-                  <option value="Bills">Bills</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-              <div className="col-md-4">
+              <div className="col-md-6">
                 <label className="form-label">Start Date</label>
                 <input 
                   type="date" 
@@ -103,7 +87,7 @@ export default function Dashboard() {
                   onChange={(e) => setFilters({...filters, startDate: e.target.value})}
                 />
               </div>
-              <div className="col-md-4">
+              <div className="col-md-6">
                 <label className="form-label">End Date</label>
                 <input 
                   type="date" 
@@ -276,21 +260,6 @@ export default function Dashboard() {
                   <p className="text-muted text-center">No expense data available</p>
                 )}
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Category List */}
-        <div className="card shadow-sm mb-4">
-          <div className="card-body">
-            <h3 className="card-title h5 mb-3">Category Summary</h3>
-            <div className="d-flex flex-column gap-2">
-              {stats?.expensesByCategory && Object.entries(stats.expensesByCategory).map(([category, total]) => (
-                <div key={category} className="d-flex justify-content-between align-items-center p-3 bg-light rounded">
-                  <span className="fw-medium">{category}</span>
-                  <span className="fw-bold" style={{ color: '#667eea' }}>₹{(total as number).toFixed(2)}</span>
-                </div>
-              ))}
             </div>
           </div>
         </div>

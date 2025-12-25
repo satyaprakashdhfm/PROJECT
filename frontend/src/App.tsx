@@ -5,6 +5,8 @@ import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
 import Budgets from './pages/Budgets';
 import Goals from './pages/Goals';
+import Import from './pages/Import';
+import Reports from './pages/Reports';
 
 function App() {
   const isAuthenticated = () => {
@@ -49,6 +51,22 @@ function App() {
           element={
             <PrivateRoute>
               <Goals />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/import"
+          element={
+            <PrivateRoute>
+              <Import />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <PrivateRoute>
+              <Reports />
             </PrivateRoute>
           }
         />

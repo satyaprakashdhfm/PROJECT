@@ -1,24 +1,44 @@
 import { useState, useEffect } from 'react';
-import { dashboardAPI } from '../api';
+import { dashboardAPI, exportAPI } from '../api';
 import { DashboardStats } from '../types';
 import Navigation from '../components/Navigation';
 
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({ category: '', startDate: '', endDate: '' });
 
   useEffect(() => {
     loadStats();
-  }, []);
+  }, [filters]);
 
   const loadStats = async () => {
     try {
-      const response: any = await dashboardAPI.getStats();
+      const params = new URLSearchParams();
+      if (filters.category) params.append('category', filters.category);
+      if (filters.startDate) params.append('startDate', filters.startDate);
+      if (filters.endDate) params.append('endDate', filters.endDate);
+      
+      const response: any = await dashboardAPI.getStats(params.toString());
       setStats(response.data || response);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExport = async (type: 'excel' | 'pdf') => {
+    try {
+      const blob = type === 'excel' ? await exportAPI.excel() : await exportAPI.pdf();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `expenses.${type === 'excel' ? 'xlsx' : 'pdf'}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -43,7 +63,58 @@ export default function Dashboard() {
       <Navigation />
 
       <main className="container py-4" style={{ maxWidth: '1200px' }}>
-        <h2 className="mb-4">Dashboard</h2>
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h2 className="mb-0">Dashboard</h2>
+          <div className="d-flex gap-2">
+            <button onClick={() => handleExport('excel')} className="btn btn-success btn-sm">
+              📊 Export Excel
+            </button>
+            <button onClick={() => handleExport('pdf')} className="btn btn-danger btn-sm">
+              📄 Export PDF
+            </button>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="card shadow-sm mb-4">
+          <div className="card-body">
+            <div className="row g-3">
+              <div className="col-md-4">
+                <label className="form-label">Category</label>
+                <select 
+                  className="form-select"
+                  value={filters.category}
+                  onChange={(e) => setFilters({...filters, category: e.target.value})}
+                >
+                  <option value="">All Categories</option>
+                  <option value="Food">Food</option>
+                  <option value="Travel">Travel</option>
+                  <option value="Shopping">Shopping</option>
+                  <option value="Bills">Bills</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div className="col-md-4">
+                <label className="form-label">Start Date</label>
+                <input 
+                  type="date" 
+                  className="form-control"
+                  value={filters.startDate}
+                  onChange={(e) => setFilters({...filters, startDate: e.target.value})}
+                />
+              </div>
+              <div className="col-md-4">
+                <label className="form-label">End Date</label>
+                <input 
+                  type="date" 
+                  className="form-control"
+                  value={filters.endDate}
+                  onChange={(e) => setFilters({...filters, endDate: e.target.value})}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Stats Cards */}
         <div className="row g-3 mb-4">

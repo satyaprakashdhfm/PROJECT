@@ -111,19 +111,19 @@ export const goalAPI = {
 
 // Dashboard API
 export const dashboardAPI = {
-  getStats: () => request<{
+  getStats: (queryString?: string) => request<{
     totalExpenses: number;
     categoryBreakdown: Array<{ category: string; total: number }>;
     recentExpenses: any[];
-  }>('/dashboard/summary'),
+  }>(`/dashboard/summary${queryString ? '?' + queryString : ''}`),
 };
 
 // Import API
 export const importAPI = {
-  importExpenses: (expenses: any[]) =>
-    request('/import/expenses', {
+  importExpenses: (transactions: any[]) =>
+    request('/import/bank', {
       method: 'POST',
-      body: JSON.stringify({ expenses }),
+      body: JSON.stringify({ transactions }),
     }),
 };
 

@@ -254,3 +254,26 @@
     - importController.js: Added duplicate detection in import loop, skips duplicates and adds to errors array with reason
     
     Result: Excel import working with proper .xlsx parsing, Goals buttons functional with event handling, duplicate expenses prevented in both manual entry and imports, users see clear feedback on duplicates
+
+15. Authentication Flow Bug - localStorage Check with Cookie Auth:
+    
+    Problem:
+    - Backend using httpOnly cookies for authentication (secure)
+    - Frontend App.tsx checking localStorage.getItem('token') for auth state
+    - Login successful on backend but frontend immediately redirected to login
+    - Cookie set correctly but App.tsx PrivateRoute checking wrong storage
+    - Caused infinite login loop - users couldn't access dashboard after successful login
+    
+    Changes made:
+    Backend:
+    - authController.js: Added verifyAuth() endpoint to validate cookie and return user info
+    - authRoutes.js: Added GET /auth/verify route with protect middleware
+    
+    Frontend:
+    - api.ts: Added authAPI.verify() method to call backend verification
+    - App.tsx: Removed localStorage check, added useState for auth state, added useEffect to call verify on mount, added loading spinner while checking auth
+    - Login.tsx: Changed navigate to window.location.href to force page reload and trigger auth check
+    - Signup.tsx: Changed navigate to window.location.href for consistent behavior
+    - Navigation.tsx: Changed logout to window.location.href to clear auth state
+    
+    Result: Proper cookie-based authentication flow - frontend calls backend to verify httpOnly cookie, loading state during verification, login/logout working correctly, industry-standard secure authentication pattern

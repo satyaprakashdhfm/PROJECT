@@ -42,11 +42,14 @@ export default function Budgets() {
   };
 
   const handleDelete = async (category: string) => {
-    if (!confirm('Delete this budget?')) return;
+    console.log('[Budgets] Delete button clicked - Category:', category);
     try {
+      console.log('[Budgets] Calling delete API for category:', category);
       await budgetAPI.delete(category);
+      console.log('[Budgets] Delete successful, reloading budgets');
       loadBudgets();
     } catch (err: any) {
+      console.error('[Budgets] Delete error:', err);
       alert(err.message);
     }
   };

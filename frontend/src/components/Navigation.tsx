@@ -24,7 +24,6 @@ export default function Navigation() {
           <button onClick={() => navigate('/budgets')} className="btn btn-link text-decoration-none">Budgets</button>
           <button onClick={() => navigate('/goals')} className="btn btn-link text-decoration-none">Goals</button>
           <button onClick={() => navigate('/import')} className="btn btn-link text-decoration-none">Import</button>
-          <button onClick={() => navigate('/reports')} className="btn btn-link text-decoration-none">Reports</button>
           <button onClick={handleLogout} className="btn btn-primary" style={{ backgroundColor: '#667eea', borderColor: '#667eea' }}>
             Logout
           </button>

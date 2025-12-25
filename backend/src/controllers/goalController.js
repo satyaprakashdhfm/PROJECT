@@ -78,18 +78,30 @@ exports.updateGoalProgress = async(req,res) => {
         const {goalId} = req.params
         const {amount} = req.body
 
+        console.log('📍 [Goal Controller] Update goal progress')
+        console.log('   Goal ID:', goalId)
+        console.log('   User ID:', req.user.id)
+        console.log('   Amount to add:', amount)
+
         if(!amount){
+            console.log('   ❌ Error: Amount missing')
             return res.status(400).json({error: "Amount required"})
         }
 
         const goal = await Goal.findOne({_id: goalId, userId: req.user.id})
 
         if(!goal){
+            console.log('   ❌ Error: Goal not found')
             return res.status(404).json({error: "Goal not found"})
         }
 
+        console.log('   ✅ Goal found:', goal.goal)
+        console.log('   Current amount before:', goal.current_amount)
+
         goal.current_amount = (goal.current_amount || 0) + amount
         await goal.save()
+
+        console.log('   ✅ New current amount:', goal.current_amount)
 
         const progress = ((goal.current_amount / parseFloat(goal.target_amount)) * 100).toFixed(2)
 
@@ -104,6 +116,7 @@ exports.updateGoalProgress = async(req,res) => {
         })
     }
     catch(error){
+        console.log('   ❌ Exception:', error.message)
         res.status(400).json({error: "Failed to update goal progress"})
     }
 }
@@ -112,15 +125,23 @@ exports.deleteGoal = async(req,res) => {
     try{
         const {goalId} = req.params
 
+        console.log('📍 [Goal Controller] Delete goal')
+        console.log('   Goal ID:', goalId)
+        console.log('   User ID:', req.user.id)
+
         const goal = await Goal.findOneAndDelete({_id: goalId, userId: req.user.id})
 
         if(!goal){
+            console.log('   ❌ Error: Goal not found')
             return res.status(404).json({error: "Goal not found"})
         }
+
+        console.log('   ✅ Goal deleted:', goal.goal)
 
         res.status(200).json({message: "Goal deleted successfully"})
     }
     catch(error){
+        console.log('   ❌ Exception:', error.message)
         res.status(500).json({error: "Failed to delete goal"})
     }
 }

@@ -28,8 +28,8 @@ export default function Signup() {
 
     try {
       await authAPI.signup(email, password);
-      alert('Account created successfully! Please login.');
-      navigate('/login');
+      // Cookie is set automatically, redirect to dashboard
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.message);
     } finally {

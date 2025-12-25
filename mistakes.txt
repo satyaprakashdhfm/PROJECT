@@ -191,3 +191,26 @@
 
 11. npm packages installation error:
     Error: E401 "Incorrect or missing password" - npm authentication token issue with stored credentials in system - Resolved by using yarn package manager instead of npm which successfully installed all dependencies (bcryptjs, cors, dotenv, exceljs, express, jsonwebtoken, mongoose, nodemon, pdfkit)
+
+25-12-2025:
+12. Authentication Security - Migrated to Cookie-Based Auth:
+    
+    Problem:
+    - Using localStorage for JWT tokens - vulnerable to XSS attacks
+    - Token exposed to JavaScript - security risk
+    - Manual token management in every request
+    
+    Changes made:
+    Backend:
+    - app.js: Added cookie-parser middleware, updated CORS with credentials: true
+    - authController.js: Changed login/signup to set httpOnly cookies instead of returning token in response, added logoutUser() to clear cookie
+    - authMiddleware.js: Modified to read token from req.cookies.token instead of Authorization header
+    - authRoutes.js: Added POST /logout endpoint
+    
+    Frontend:
+    - api.ts: Removed localStorage code (getToken, setToken, removeToken), added credentials: 'include' to all requests, removed Authorization headers
+    - Navigation.tsx: Changed logout to call authAPI.logout() instead of removeToken()
+    - Login.tsx: Removed setToken() call, cookie set automatically by backend
+    - Signup.tsx: Changed to redirect to dashboard directly (cookie set on signup)
+    
+    Result: Tokens now stored in httpOnly cookies (protected from XSS), automatic cookie handling by browser, SameSite CSRF protection, secure flag for production HTTPS

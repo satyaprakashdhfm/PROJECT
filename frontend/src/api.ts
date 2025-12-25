@@ -1,31 +1,17 @@
 // Simple API configuration
 const API_BASE_URL = '/api/v1';
 
-// Get token from localStorage
-const getToken = (): string | null => localStorage.getItem('token');
-
-// Set token to localStorage
-export const setToken = (token: string): void => {
-  localStorage.setItem('token', token);
-};
-
-// Remove token from localStorage
-export const removeToken = (): void => {
-  localStorage.removeItem('token');
-};
-
-// Generic fetch wrapper
+// Generic fetch wrapper with credentials for cookie-based auth
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const token = getToken();
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
-    ...(token && { Authorization: `Bearer ${token}` }),
     ...options.headers,
   };
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
     headers,
+    credentials: 'include', // Important: Include cookies in requests
   });
 
   const data = await response.json();
@@ -46,9 +32,14 @@ export const authAPI = {
     }),
   
   login: (email: string, password: string) =>
-    request<{ token: string }>('/auth/login', {
+    request('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
+    }),
+  
+  logout: () =>
+    request('/auth/logout', {
+      method: 'POST',
     }),
 };
 
@@ -139,17 +130,15 @@ export const importAPI = {
 // Export API
 export const exportAPI = {
   excel: async () => {
-    const token = getToken();
     const response = await fetch(`${API_BASE_URL}/export/excel`, {
-      headers: { Authorization: `Bearer ${token}` },
+      credentials: 'include',
     });
     return response.blob();
   },
   
   pdf: async () => {
-    const token = getToken();
     const response = await fetch(`${API_BASE_URL}/export/pdf`, {
-      headers: { Authorization: `Bearer ${token}` },
+      credentials: 'include',
     });
     return response.blob();
   },

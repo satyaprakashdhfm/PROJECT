@@ -37,7 +37,17 @@ exports.registerUser = async(req,res) => {
             password:hashPassword
         }) 
 
-        res.status(201).json({message:"User registered successfully"})
+        // Create token and set cookie for immediate login after signup
+        const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: "1d"});
+        
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 24 * 60 * 60 * 1000
+        });
+
+        res.status(201).json({message:"User registered successfully"});
     }
     catch(error){ 
         res.status(400).json({error:"Invalid request body"})
@@ -64,7 +74,15 @@ exports.loginUser = async(req,res) => {
                                process.env.JWT_SECRET,
                                {expiresIn:"1d"});
         
-        res.status(200).json({token}) 
+        // Set httpOnly cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 24 * 60 * 60 * 1000 // 1 day
+        });
+        
+        res.status(200).json({message: "Login successful"});
     }
     catch(error){
         res.status(401).json({error:"Invalid credentials"})
@@ -92,4 +110,13 @@ exports.resetPassword = async(req,res) => {
     catch(error){
         res.status(400).json({error:"Failed to reset password"})
     }
+}
+
+exports.logoutUser = (req, res) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+    });
+    res.status(200).json({message: "Logout successful"});
 }

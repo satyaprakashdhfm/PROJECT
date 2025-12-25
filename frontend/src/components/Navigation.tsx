@@ -1,12 +1,17 @@
 import { useNavigate } from 'react-router-dom';
-import { removeToken } from '../api';
+import { authAPI } from '../api';
 
 export default function Navigation() {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    removeToken();
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await authAPI.logout();
+      navigate('/login');
+    } catch (err) {
+      console.error('Logout error:', err);
+      navigate('/login');
+    }
   };
 
   return (

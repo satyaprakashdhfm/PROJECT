@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authAPI, setToken } from '../api';
+import { authAPI } from '../api';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -15,8 +15,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await authAPI.login(email, password);
-      setToken(response.token);
+      await authAPI.login(email, password);
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message);

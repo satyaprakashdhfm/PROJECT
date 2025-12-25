@@ -41,7 +41,7 @@ export default function Budgets() {
     }
   };
 
-  const handleDelete = async (id: string, category: string) => {
+  const handleDelete = async (category: string) => {
     if (!confirm('Delete this budget?')) return;
     try {
       await budgetAPI.delete(category);
@@ -128,7 +128,12 @@ export default function Budgets() {
                       ₹{budget.budget_amount.toFixed(2)}
                     </h4>
                     <button 
-                      onClick={() => handleDelete(budget._id, budget.category)} 
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleDelete(budget.category);
+                      }} 
                       className="btn btn-danger btn-sm"
                     >
                       Delete

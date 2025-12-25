@@ -234,3 +234,23 @@
     - api.ts: Fixed import endpoint to /import/bank, added query string support to dashboardAPI.getStats()
     
     Result: All 7 User Stories now have complete frontend implementation - users can import expenses, export data, filter dashboard, view custom reports
+
+14. Excel Import & Goals Buttons Fix + Duplicate Detection:
+    
+    Problems:
+    - Import page not parsing .xlsx files correctly (binary data corruption)
+    - Goals update/delete buttons not triggering API calls
+    - Import showing "Imported: 0" despite backend success (response.data not extracted)
+    - No duplicate expense detection - users could import same file multiple times or manually add duplicates
+    
+    Changes made:
+    Frontend:
+    - Import.tsx: Installed xlsx library, replaced text parsing with XLSX.read() for proper Excel parsing, added response.data extraction, added expandable failed transactions list with error details
+    - Goals.tsx: Added type="button" to prevent form submission, added e.preventDefault() and e.stopPropagation(), added console.log debugging
+    - Expenses.tsx: Added user-friendly duplicate error alert
+    
+    Backend:
+    - expenseController.js: Added duplicate check before creating expense (matches amount, date, description, merchant), returns 409 Conflict status
+    - importController.js: Added duplicate detection in import loop, skips duplicates and adds to errors array with reason
+    
+    Result: Excel import working with proper .xlsx parsing, Goals buttons functional with event handling, duplicate expenses prevented in both manual entry and imports, users see clear feedback on duplicates

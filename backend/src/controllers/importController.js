@@ -50,6 +50,21 @@ exports.importFromBank = async(req,res) => {
                     continue
                 }
 
+                // Check for duplicate expense
+                const merchant = txn.merchant ? txn.merchant.trim() : ''
+                const duplicate = await Expense.findOne({
+                    user: req.user.id,
+                    amount: Math.abs(amount),
+                    date,
+                    description: txn.description.trim(),
+                    merchant: merchant || { $in: [null, ''] }
+                })
+
+                if (duplicate) {
+                    errors.push({index: i, error: "Duplicate expense - already exists"})
+                    continue
+                }
+
                 // Auto-categorize based on description
                 const category = categorizeExpense(txn.description)
 
@@ -60,7 +75,7 @@ exports.importFromBank = async(req,res) => {
                     date,
                     category,
                     description: txn.description.trim(),
-                    merchant: txn.merchant ? txn.merchant.trim() : null
+                    merchant: merchant || null
                 })
 
                 importedExpenses.push(expense)

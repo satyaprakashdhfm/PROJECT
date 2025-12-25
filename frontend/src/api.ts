@@ -45,7 +45,7 @@ export const authAPI = {
 
 // Expense API
 export const expenseAPI = {
-  getAll: () => request<{ expenses: any[] }>('/expense'),
+  getAll: (queryString?: string) => request<{ expenses: any[] }>(`/expense${queryString || ''}`),
   
   add: (expense: {
     amount: number;

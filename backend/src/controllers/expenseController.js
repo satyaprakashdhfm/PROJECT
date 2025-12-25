@@ -20,6 +20,22 @@ const addExpense = async (req,res) => {
         if(!amount || !date || !description || !category) 
             return res.status(400).json({error:"All fields are required"})
 
+        // Check for duplicate expense
+        const duplicate = await Expense.findOne({
+            user: req.user.id,
+            amount,
+            date: new Date(date),
+            description,
+            merchant: merchant || ''
+        });
+
+        if (duplicate) {
+            return res.status(409).json({
+                error: "Duplicate expense detected",
+                message: "An expense with the same amount, date, description, and merchant already exists"
+            });
+        }
+
         const expense = await Expense.create({
             user:req.user.id,
             amount,date,description,category,merchant});

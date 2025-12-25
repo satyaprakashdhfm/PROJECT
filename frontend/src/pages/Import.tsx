@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import Navigation from '../components/Navigation';
+import React, { useState } from 'react';
 import { importAPI } from '../api';
+import Navigation from '../components/Navigation';
+import * as XLSX from 'xlsx';
 
 export default function Import() {
   const [file, setFile] = useState<File | null>(null);
@@ -26,18 +27,36 @@ export default function Import() {
     setError('');
 
     try {
-      // Read file as text
-      const text = await file.text();
-      const lines = text.split('\n').filter(line => line.trim());
-      
-      // Parse CSV (assuming: date,amount,description,merchant)
-      const transactions = lines.slice(1).map(line => {
-        const [date, amount, description, merchant] = line.split(',').map(s => s.trim());
-        return { date, amount: parseFloat(amount), description, merchant };
-      });
+      const buffer = await file.arrayBuffer();
+      const workbook = XLSX.read(buffer, { type: 'array' });
+      const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+      const data = XLSX.utils.sheet_to_json(firstSheet);
+
+      if (data.length === 0) {
+        setError('No data found in file');
+        setLoading(false);
+        return;
+      }
+
+      // Parse transactions from Excel data
+      const transactions = data.map((row: any) => {
+        const date = row.date || row.Date || row.DATE || '';
+        const amount = parseFloat(row.amount || row.Amount || row.AMOUNT || 0);
+        const description = row.description || row.Description || row.DESCRIPTION || 'Imported transaction';
+        const merchant = row.merchant || row.Merchant || row.MERCHANT || '';
+        
+        return { date, amount, description, merchant };
+      }).filter((t: any) => t.date && !isNaN(t.amount) && t.amount > 0);
+
+      if (transactions.length === 0) {
+        setError('No valid transactions found. Excel should have columns: date, amount, description, merchant');
+        setLoading(false);
+        return;
+      }
 
       const response: any = await importAPI.importExpenses(transactions);
-      setResult(response);
+      // Backend returns {message, data: {imported, failed, expenses}}
+      setResult(response.data || response);
       setFile(null);
     } catch (err: any) {
       setError(err.message);
@@ -54,11 +73,15 @@ export default function Import() {
         <h2 style={styles.pageTitle}>Import Expenses</h2>
 
         <div style={styles.card}>
-          <p style={styles.info}>Upload a CSV file with columns: date, amount, description, merchant</p>
+          <p style={styles.info}>
+            Upload an Excel (.xlsx) or CSV file with columns:<br/>
+            <strong>date | amount | description | merchant</strong><br/>
+            <small>Example: 2025-12-25 | 500 | Grocery Shopping | Walmart</small>
+          </p>
           
           <input 
             type="file" 
-            accept=".csv,.xlsx" 
+            accept=".csv,.xlsx,.xls" 
             onChange={handleFileChange}
             style={styles.fileInput}
           />

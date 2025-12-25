@@ -43,6 +43,7 @@ export default function Goals() {
   };
 
   const handleUpdateProgress = async (id: string, currentAmount: number) => {
+    console.log('Update clicked:', id, currentAmount);
     const newAmount = prompt(`Current progress: ₹${currentAmount.toFixed(2)}\nEnter amount to ADD:`);
     if (!newAmount) return;
     const incrementAmount = parseFloat(newAmount);
@@ -51,6 +52,7 @@ export default function Goals() {
       return;
     }
     try {
+      console.log('Calling update API:', id, incrementAmount);
       await goalAPI.update(id, incrementAmount);
       loadGoals();
     } catch (err: any) {
@@ -59,8 +61,10 @@ export default function Goals() {
   };
 
   const handleDelete = async (id: string) => {
+    console.log('Delete clicked:', id);
     if (!confirm('Delete this goal?')) return;
     try {
+      console.log('Calling delete API:', id);
       await goalAPI.delete(id);
       loadGoals();
     } catch (err: any) {
@@ -145,14 +149,24 @@ export default function Goals() {
                     <h5 className="card-title mb-0">{goal.goal}</h5>
                     <div className="d-flex gap-2">
                       <button 
-                        onClick={() => handleUpdateProgress(goal._id, goal.current_amount)} 
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleUpdateProgress(goal._id, goal.current_amount || 0);
+                        }} 
                         className="btn btn-primary btn-sm"
                         style={{ backgroundColor: '#667eea', borderColor: '#667eea' }}
                       >
                         Update
                       </button>
                       <button 
-                        onClick={() => handleDelete(goal._id)} 
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleDelete(goal._id);
+                        }} 
                         className="btn btn-danger btn-sm"
                       >
                         Delete

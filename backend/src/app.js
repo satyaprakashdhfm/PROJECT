@@ -21,18 +21,7 @@ app.use(cookieParser())
 
 // Request logging middleware
 app.use((req, res, next) => {
-    console.log(`📍 ${req.method} ${req.originalUrl}`)
-    console.log('📦 Body:', JSON.stringify(req.body))
-    console.log('🔑 Headers:', req.headers.authorization ? 'Token Present' : 'No Token')
-    
-    // Capture response
-    const originalSend = res.send
-    res.send = function(data) {
-        console.log('✅ Response:', typeof data === 'string' ? data.substring(0, 200) : JSON.stringify(data).substring(0, 200))
-        console.log('---')
-        originalSend.call(this, data)
-    }
-    
+    console.log(`${req.method} ${req.originalUrl}`)
     next()
 })
 

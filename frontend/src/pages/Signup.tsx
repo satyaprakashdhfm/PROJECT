@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../api';
 
-export default function Signup() {
+export default function Signup () {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,7 +24,7 @@ export default function Signup() {
       return;
     }
 
-    setLoading(true);
+    // setLoading(true);
 
     try {
       await authAPI.signup(email, password);
@@ -32,9 +32,10 @@ export default function Signup() {
       window.location.href = '/dashboard';
     } catch (err: any) {
       setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+    } 
+    // finally {
+    //   setLoading(false);
+    // }
   };
 
   return (
@@ -87,10 +88,11 @@ export default function Signup() {
             <button 
               type="submit" 
               className="btn btn-primary w-100 fw-semibold" 
-              disabled={loading}
+              // disabled={loading}
               style={{ backgroundColor: '#667eea', borderColor: '#667eea' }}
             >
-              {loading ? 'Creating...' : 'Sign Up'}
+              {/* {loading ? 'Creating...' : 'Sign Up'} */} 
+              Sign Up
             </button>
           </form>
 

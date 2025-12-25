@@ -6,13 +6,13 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
+    // setLoading(true); 
 
     try {
       await authAPI.login(email, password);
@@ -20,9 +20,10 @@ export default function Login() {
       window.location.href = '/dashboard';
     } catch (err: any) {
       setError(err.message);
-    } finally {
-      setLoading(false);
     }
+    //  finally {
+    //   setLoading(false);
+    // }
   };
 
   return (
@@ -64,10 +65,11 @@ export default function Login() {
             <button 
               type="submit" 
               className="btn btn-primary w-100 fw-semibold" 
-              disabled={loading}
+              // disabled={loading}
               style={{ backgroundColor: '#667eea', borderColor: '#667eea' }}
             >
-              {loading ? 'Loading...' : 'Login'}
+              {/* {loading ? 'Loading...' : 'Login'} */}
+              Login
             </button>
           </form>
 

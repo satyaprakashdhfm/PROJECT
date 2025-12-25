@@ -58,12 +58,12 @@ export default function Expenses() {
       
       // Show budget alert if exceeded
       if (response.alert) {
-        alert(`⚠️ ${response.alert}`);
+        alert(`${response.alert}`);
       }
     } catch (err: any) {
       // Handle duplicate expense error
       if (err.message && err.message.includes('Duplicate expense')) {
-        alert('❌ Duplicate Expense!\n\nAn expense with the same amount, date, description, and merchant already exists.');
+        alert('Duplicate Expense!\n\nAn expense with the same amount, date, description, and merchant already exists.');
       } else {
         alert(err.message);
       }

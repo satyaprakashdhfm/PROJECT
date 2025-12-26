@@ -1,5 +1,21 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import Navigation from '../components/Navigation';
+
+// Configure axios instance
+const axiosInstance = axios.create({
+  baseURL: '/api/v1',
+  withCredentials: true,
+});
+
+// Add response interceptor to match the main api.ts behavior
+axiosInstance.interceptors.response.use(
+  (response) => response.data,
+  (error) => {
+    const message = error.response?.data?.error || error.message || 'Something went wrong';
+    return Promise.reject(new Error(message));
+  }
+);
 
 export default function Reports() {
   const [reportType, setReportType] = useState('category');
@@ -13,11 +29,8 @@ export default function Reports() {
   const loadReport = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/v1/goals/reports/${reportType}`, {
-        credentials: 'include',
-      });
-      const result = await response.json();
-      setData(result.data || result);
+      const response = await axiosInstance.get(`/goals/reports/${reportType}`);
+      setData(response.data || response);
     } catch (err) {
       console.error(err);
     } finally {

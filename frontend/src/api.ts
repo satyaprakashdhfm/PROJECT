@@ -1,58 +1,42 @@
-// Simple API configuration
-const API_BASE_URL = '/api/v1';
+import axios, { AxiosInstance } from 'axios';
 
-// Generic fetch wrapper with credentials for cookie-based auth
-async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const headers: HeadersInit = {
+// Axios instance configuration
+const axiosInstance: AxiosInstance = axios.create({
+  baseURL: '/api/v1',
+  withCredentials: true, // Important: Include cookies in requests
+  headers: {
     'Content-Type': 'application/json',
-    ...options.headers,
-  };
+  },
+});
 
-  const fullUrl = `${API_BASE_URL}${endpoint}`;
-
-  const response = await fetch(fullUrl, {
-    ...options,
-    headers,
-    credentials: 'include', // Important: Include cookies in requests
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.error || 'Something went wrong');
+// Response interceptor for error handling
+axiosInstance.interceptors.response.use(
+  (response) => response.data,
+  (error) => {
+    const message = error.response?.data?.error || error.message || 'Something went wrong';
+    return Promise.reject(new Error(message));
   }
-
-  return data;
-}
+);
 
 // Auth API
 export const authAPI = {
   signup: (username: string, email: string, password: string) =>
-    request('/auth/signup', {
-      method: 'POST',
-      body: JSON.stringify({ username, email, password }),
-    }),
+    axiosInstance.post('/auth/signup', { username, email, password }),
   
   login: (email: string, password: string) =>
-    request('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    }),
+    axiosInstance.post('/auth/login', { email, password }),
   
   logout: () =>
-    request('/auth/logout', {
-      method: 'POST',
-    }),
+    axiosInstance.post('/auth/logout'),
   
   verify: () =>
-    request<{ authenticated: boolean; user?: { id: string; email: string } }>('/auth/verify', {
-      method: 'GET',
-    }),
+    axiosInstance.get<{ authenticated: boolean; user?: { id: string; email: string; username: string } }>('/auth/verify'),
 };
 
 // Expense API
 export const expenseAPI = {
-  getAll: (queryString?: string) => request<{ expenses: any[] }>(`/expense${queryString || ''}`),
+  getAll: (queryString?: string) => 
+    axiosInstance.get<{ expenses: any[] }>(`/expense${queryString || ''}`),
   
   add: (expense: {
     amount: number;
@@ -61,92 +45,72 @@ export const expenseAPI = {
     description: string;
     merchant?: string;
   }) =>
-    request('/expense/add', {
-      method: 'POST',
-      body: JSON.stringify(expense),
-    }),
+    axiosInstance.post('/expense/add', expense),
   
   delete: (id: string) =>
-    request(`/expense/${id}`, {
-      method: 'DELETE',
-    }),
+    axiosInstance.delete(`/expense/${id}`),
 };
 
 // Budget API
 export const budgetAPI = {
-  getAll: () => request<{ budgets: any[] }>('/budgets'),
+  getAll: () => 
+    axiosInstance.get<{ budgets: any[] }>('/budgets'),
   
   create: (budget: { category: string; budget_amount: number }) =>
-    request('/budgets/set', {
-      method: 'POST',
-      body: JSON.stringify(budget),
-    }),
+    axiosInstance.post('/budgets/set', budget),
   
   update: (id: string, budget_amount: number) =>
-    request(`/budgets/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify({ budget_amount }),
-    }),
+    axiosInstance.put(`/budgets/${id}`, { budget_amount }),
   
   delete: (category: string) =>
-    request(`/budgets/${category}`, {
-      method: 'DELETE',
-    }),
+    axiosInstance.delete(`/budgets/${category}`),
 };
 
 // Goal API
 export const goalAPI = {
-  getAll: () => request<{ goals: any[] }>('/goals'),
+  getAll: () => 
+    axiosInstance.get<{ goals: any[] }>('/goals'),
   
   create: (goal: { goal: string; target_amount: number }) =>
-    request('/goals', {
-      method: 'POST',
-      body: JSON.stringify(goal),
-    }),
+    axiosInstance.post('/goals', goal),
   
   update: (id: string, incrementAmount: number) =>
-    request(`/goals/${id}/progress`, {
-      method: 'PUT',
-      body: JSON.stringify({ amount: incrementAmount }),
-    }),
+    axiosInstance.put(`/goals/${id}/progress`, { amount: incrementAmount }),
   
   delete: (id: string) =>
-    request(`/goals/${id}`, {
-      method: 'DELETE',
-    }),
+    axiosInstance.delete(`/goals/${id}`),
 };
 
 // Dashboard API
 export const dashboardAPI = {
-  getStats: (queryString?: string) => request<{
-    totalExpenses: number;
-    categoryBreakdown: Array<{ category: string; total: number }>;
-    recentExpenses: any[];
-  }>(`/dashboard/summary${queryString ? '?' + queryString : ''}`),
+  getStats: (queryString?: string) => 
+    axiosInstance.get<{
+      totalExpenses: number;
+      categoryBreakdown: Array<{ category: string; total: number }>;
+      recentExpenses: any[];
+    }>(`/dashboard/summary${queryString ? '?' + queryString : ''}`),
 };
 
 // Import API
 export const importAPI = {
   importExpenses: (transactions: any[]) =>
-    request('/import/bank', {
-      method: 'POST',
-      body: JSON.stringify({ transactions }),
-    }),
+    axiosInstance.post('/import/bank', { transactions }),
 };
 
 // Export API
 export const exportAPI = {
   excel: async () => {
-    const response = await fetch(`${API_BASE_URL}/export/excel`, {
-      credentials: 'include',
+    const response = await axiosInstance.get('/export/excel', {
+      responseType: 'blob',
     });
-    return response.blob();
+    return response as unknown as Blob;
   },
   
   pdf: async () => {
-    const response = await fetch(`${API_BASE_URL}/export/pdf`, {
-      credentials: 'include',
+    const response = await axiosInstance.get('/export/pdf', {
+      responseType: 'blob',
     });
-    return response.blob();
+    return response as unknown as Blob;
   },
 };
+

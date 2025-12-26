@@ -1,7 +1,23 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { goalAPI } from '../api';
 import { Goal } from '../types';
 import Navigation from '../components/Navigation';
+
+// Configure axios instance for this component
+const axiosInstance = axios.create({
+  baseURL: '/api/v1',
+  withCredentials: true,
+});
+
+// Add response interceptor to match the main api.ts behavior
+axiosInstance.interceptors.response.use(
+  (response) => response.data,
+  (error) => {
+    const message = error.response?.data?.error || error.message || 'Something went wrong';
+    return Promise.reject(new Error(message));
+  }
+);
 
 export default function Goals() {
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -19,11 +35,12 @@ export default function Goals() {
 
   useEffect(() => {
     loadGoals();
-    loadReport(); // Load reports on mount
   }, []);
 
   useEffect(() => {
-    loadReport(); // Reload when report type or time period changes
+    if (reportType) {
+      loadReport(); // Load reports when report type or time period changes
+    }
   }, [reportType, timePeriod]);
 
   const loadGoals = async () => {
@@ -85,22 +102,14 @@ export default function Goals() {
   const loadReport = async () => {
     setLoadingReport(true);
     try {
-      let url = `http://localhost:3000/api/v1/goals/reports/${reportType}`;
+      let url = `/goals/reports/${reportType}`;
       
       // Add period query param for time-based reports
       if (reportType === 'time') {
         url += `?period=${timePeriod}`;
       }
       
-      const response = await fetch(url, {
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
+      const data = await axiosInstance.get(url);
       console.log('Report data received:', data);
       setReportData(data);
     } catch (err) {

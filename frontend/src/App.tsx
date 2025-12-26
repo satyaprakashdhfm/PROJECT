@@ -19,7 +19,7 @@ function App() {
 
   const checkAuth = async () => {
     try {
-      const response = await authAPI.verify();
+      const response: any = await authAPI.verify();
       setIsAuthenticated(response.authenticated);
     } catch (error) {
       setIsAuthenticated(false);

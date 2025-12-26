@@ -120,7 +120,7 @@ export default function Navigation() {
             transition: 'all 0.2s'
           }}
         >
-          🚪 Logout
+          Logout
         </button>
       </div>
     </div>

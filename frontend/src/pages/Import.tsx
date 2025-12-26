@@ -103,86 +103,88 @@ export default function Import() {
   };
 
   return (
-    <div style={styles.container}>
+    <div className="min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
       <Navigation />
 
-      <main style={styles.main}>
-        <h2 style={styles.pageTitle}>Import Expenses</h2>
+      <main className="py-4" style={{ marginLeft: '250px', padding: '2rem' }}>
+        <h2 className="mb-4 fw-bold">Import Expenses</h2>
 
-        <div style={styles.card}>
-          <p style={styles.info}>
-            Upload an Excel (.xlsx) or CSV file with columns:<br/>
-            <strong>date | amount | description | merchant</strong><br/>
-            <small>Example: 2025-12-25 | 500 | Grocery Shopping | Walmart</small>
-          </p>
-          
-          <input 
-            type="file" 
-            accept=".csv,.xlsx,.xls" 
-            onChange={handleFileChange}
-            style={styles.fileInput}
-          />
+        <div className="card shadow-sm">
+          <div className="card-body p-4">
+            <p className="text-muted mb-4">
+              Upload an Excel (.xlsx) or CSV file with columns:<br/>
+              <strong>date | amount | description | merchant</strong><br/>
+              <small>Example: 2025-12-25 | 500 | Grocery Shopping | Walmart</small>
+            </p>
+            
+            <input 
+              type="file" 
+              accept=".csv,.xlsx,.xls" 
+              onChange={handleFileChange}
+              className="form-control mb-3"
+            />
 
-          {file && <p style={styles.fileName}>Selected: {file.name}</p>}
+            {file && <p className="text-primary mb-3">Selected: {file.name}</p>}
 
-          {!previewData && (
-            <button 
-              onClick={handlePreview} 
-              disabled={!file || loading}
-              style={{...styles.button, opacity: (!file || loading) ? 0.5 : 1}}
-            >
-              {loading ? 'Analyzing...' : 'Preview Import'}
-            </button>
-          )}
+            {!previewData && (
+              <button 
+                onClick={handlePreview} 
+                disabled={!file || loading}
+                className="btn btn-primary"
+                style={{ backgroundColor: '#667eea', borderColor: '#667eea' }}
+              >
+                {loading ? 'Analyzing...' : 'Preview Import'}
+              </button>
+            )}
 
-          {error && <p style={styles.error}>{error}</p>}
+            {error && <p className="text-danger mt-3">{error}</p>}
 
-          {previewData && (
-            <div style={styles.previewContainer}>
-              <h3 style={styles.previewTitle}>📋 Import Preview</h3>
+            {previewData && (
+              <div className="mt-4 p-3 bg-light rounded border">
+                <h3 className="mb-3">📋 Import Preview</h3>
               
-              <div style={styles.summary}>
-                <div style={{...styles.summaryItem, backgroundColor: '#d4edda', color: '#155724'}}>
+              <div className="d-flex gap-3 mb-4 flex-wrap">
+                <div className="flex-fill text-center p-3 rounded" style={{ backgroundColor: '#d4edda', color: '#155724', minWidth: '120px' }}>
                   <strong>{previewData.valid.length}</strong> Valid
                 </div>
-                <div style={{...styles.summaryItem, backgroundColor: '#f8d7da', color: '#721c24'}}>
+                <div className="flex-fill text-center p-3 rounded" style={{ backgroundColor: '#f8d7da', color: '#721c24', minWidth: '120px' }}>
                   <strong>{previewData.invalid.length}</strong> Invalid
                 </div>
-                <div style={{...styles.summaryItem, backgroundColor: '#d1ecf1', color: '#0c5460'}}>
+                <div className="flex-fill text-center p-3 rounded" style={{ backgroundColor: '#d1ecf1', color: '#0c5460', minWidth: '120px' }}>
                   <strong>{previewData.totalRows}</strong> Total
                 </div>
               </div>
 
               {previewData.valid.length > 0 && (
-                <details open style={styles.detailsSection}>
-                  <summary style={{...styles.detailsSummary, color: '#28a745'}}>
+                <details open className="mb-3 border rounded p-2 bg-white">
+                  <summary className="cursor-pointer fw-semibold text-success p-1" style={{ cursor: 'pointer' }}>
                     ✅ Valid Transactions ({previewData.valid.length}) - Will be imported
                   </summary>
-                  <div style={styles.tableContainer}>
-                    <table style={styles.table}>
-                      <thead>
+                  <div className="mt-3" style={{ maxHeight: '300px', overflowY: 'auto', overflowX: 'auto' }}>
+                    <table className="table table-sm table-hover">
+                      <thead className="table-light position-sticky" style={{ top: 0 }}>
                         <tr>
-                          <th style={styles.th}>Row</th>
-                          <th style={styles.th}>Date</th>
-                          <th style={styles.th}>Amount</th>
-                          <th style={styles.th}>Description</th>
-                          <th style={styles.th}>Merchant</th>
+                          <th>Row</th>
+                          <th>Date</th>
+                          <th>Amount</th>
+                          <th>Description</th>
+                          <th>Merchant</th>
                         </tr>
                       </thead>
                       <tbody>
                         {previewData.valid.slice(0, 10).map((t: any, idx: number) => (
                           <tr key={idx}>
-                            <td style={styles.td}>{t.rowIndex}</td>
-                            <td style={styles.td}>{t.date}</td>
-                            <td style={styles.td}>₹{t.amount}</td>
-                            <td style={styles.td}>{t.description}</td>
-                            <td style={styles.td}>{t.merchant || '-'}</td>
+                            <td>{t.rowIndex}</td>
+                            <td>{t.date}</td>
+                            <td>₹{t.amount}</td>
+                            <td>{t.description}</td>
+                            <td>{t.merchant || '-'}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                     {previewData.valid.length > 10 && (
-                      <p style={{textAlign: 'center', marginTop: '10px', fontSize: '14px', color: '#6c757d'}}>
+                      <p className="text-center mt-2 text-muted small">
                         ... and {previewData.valid.length - 10} more
                       </p>
                     )}
@@ -191,29 +193,29 @@ export default function Import() {
               )}
 
               {previewData.invalid.length > 0 && (
-                <details style={styles.detailsSection}>
-                  <summary style={{...styles.detailsSummary, color: '#dc3545'}}>
+                <details className="mb-3 border rounded p-2 bg-white">
+                  <summary className="cursor-pointer fw-semibold text-danger p-1" style={{ cursor: 'pointer' }}>
                     ❌ Invalid Transactions ({previewData.invalid.length}) - Will be skipped
                   </summary>
-                  <div style={styles.tableContainer}>
-                    <table style={styles.table}>
-                      <thead>
+                  <div className="mt-3" style={{ maxHeight: '300px', overflowY: 'auto', overflowX: 'auto' }}>
+                    <table className="table table-sm table-hover">
+                      <thead className="table-light position-sticky" style={{ top: 0 }}>
                         <tr>
-                          <th style={styles.th}>Row</th>
-                          <th style={styles.th}>Date</th>
-                          <th style={styles.th}>Amount</th>
-                          <th style={styles.th}>Description</th>
-                          <th style={styles.th}>Reason</th>
+                          <th>Row</th>
+                          <th>Date</th>
+                          <th>Amount</th>
+                          <th>Description</th>
+                          <th>Reason</th>
                         </tr>
                       </thead>
                       <tbody>
                         {previewData.invalid.map((t: any, idx: number) => (
                           <tr key={idx}>
-                            <td style={styles.td}>{t.rowIndex}</td>
-                            <td style={styles.td}>{t.date || '-'}</td>
-                            <td style={styles.td}>{t.amount || '-'}</td>
-                            <td style={styles.td}>{t.description || '-'}</td>
-                            <td style={{...styles.td, color: '#dc3545'}}>{t.reason}</td>
+                            <td>{t.rowIndex}</td>
+                            <td>{t.date || '-'}</td>
+                            <td>{t.amount || '-'}</td>
+                            <td>{t.description || '-'}</td>
+                            <td className="text-danger">{t.reason}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -222,18 +224,18 @@ export default function Import() {
                 </details>
               )}
 
-              <div style={styles.actionButtons}>
+              <div className="d-flex gap-3 mt-4 justify-content-center">
                 <button 
                   onClick={handleConfirmImport} 
                   disabled={confirming || previewData.valid.length === 0}
-                  style={{...styles.confirmButton, opacity: (confirming || previewData.valid.length === 0) ? 0.5 : 1}}
+                  className="btn btn-success fw-semibold"
                 >
                   {confirming ? 'Importing...' : `✓ Confirm & Import ${previewData.valid.length} Transactions`}
                 </button>
                 <button 
                   onClick={handleCancel} 
                   disabled={confirming}
-                  style={{...styles.cancelButton, opacity: confirming ? 0.5 : 1}}
+                  className="btn btn-secondary fw-semibold"
                 >
                   Cancel
                 </button>
@@ -242,18 +244,18 @@ export default function Import() {
           )}
 
           {result && (
-            <div style={styles.result}>
-              <p style={styles.success}>✅ Import completed!</p>
-              <p>Imported: {result.imported || 0}</p>
-              <p>Failed: {result.failed || 0}</p>
+            <div className="mt-4 p-4 bg-light rounded border">
+              <p className="text-success fw-bold mb-2">✅ Import completed!</p>
+              <p className="mb-1">Imported: {result.imported || 0}</p>
+              <p className="mb-3">Failed: {result.failed || 0}</p>
               {result.errors && result.errors.length > 0 && (
-                <details style={{ marginTop: '10px', fontSize: '14px' }}>
-                  <summary style={{ cursor: 'pointer', color: '#dc3545' }}>
+                <details className="mt-3 small">
+                  <summary className="cursor-pointer text-danger" style={{ cursor: 'pointer' }}>
                     View failed transactions ({result.errors.length})
                   </summary>
-                  <ul style={{ marginTop: '10px', paddingLeft: '20px', maxHeight: '200px', overflow: 'auto' }}>
+                  <ul className="mt-2 ps-4" style={{ maxHeight: '200px', overflow: 'auto' }}>
                     {result.errors.map((err: any, idx: number) => (
-                      <li key={idx} style={{ marginBottom: '5px' }}>
+                      <li key={idx} className="mb-1">
                         Row {err.index + 2}: {err.error}
                       </li>
                     ))}
@@ -262,158 +264,10 @@ export default function Import() {
               )}
             </div>
           )}
+          </div>
         </div>
       </main>
     </div>
   );
 }
 
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    minHeight: '100vh',
-    background: '#f8f9fa',
-  },
-  main: {
-    marginLeft: '250px',
-    padding: '2rem',
-  },
-  pageTitle: {
-    marginBottom: '30px',
-    color: '#333',
-    fontWeight: 'bold',
-  },
-  card: {
-    background: 'white',
-    padding: '40px',
-    borderRadius: '10px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-  },
-  info: {
-    color: '#666',
-    marginBottom: '20px',
-  },
-  fileInput: {
-    display: 'block',
-    marginBottom: '20px',
-    padding: '10px',
-    width: '100%',
-  },
-  fileName: {
-    color: '#667eea',
-    marginBottom: '20px',
-  },
-  button: {
-    padding: '12px 30px',
-    background: '#667eea',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontWeight: '500',
-    fontSize: '16px',
-  },
-  error: {
-    color: 'red',
-    marginTop: '20px',
-  },
-  result: {
-    marginTop: '20px',
-    padding: '20px',
-    background: '#f0f9ff',
-    borderRadius: '5px',
-  },
-  success: {
-    color: '#059669',
-    fontWeight: 'bold',
-    marginBottom: '10px',
-  },
-  previewContainer: {
-    marginTop: '30px',
-    padding: '20px',
-    background: '#f8f9fa',
-    borderRadius: '8px',
-    border: '1px solid #dee2e6',
-  },
-  previewTitle: {
-    margin: '0 0 20px 0',
-    color: '#333',
-    fontSize: '20px',
-  },
-  summary: {
-    display: 'flex',
-    gap: '15px',
-    marginBottom: '25px',
-    flexWrap: 'wrap' as 'wrap',
-  },
-  summaryItem: {
-    flex: '1',
-    minWidth: '120px',
-    padding: '15px',
-    borderRadius: '8px',
-    textAlign: 'center' as 'center',
-    fontSize: '14px',
-  },
-  detailsSection: {
-    marginBottom: '20px',
-    border: '1px solid #dee2e6',
-    borderRadius: '5px',
-    padding: '10px',
-    background: 'white',
-  },
-  detailsSummary: {
-    cursor: 'pointer',
-    fontWeight: '600',
-    fontSize: '16px',
-    padding: '5px',
-  },
-  tableContainer: {
-    marginTop: '15px',
-    overflowX: 'auto' as 'auto',
-    maxHeight: '300px',
-    overflowY: 'auto' as 'auto',
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse' as 'collapse',
-    fontSize: '14px',
-  },
-  th: {
-    padding: '10px',
-    background: '#f8f9fa',
-    borderBottom: '2px solid #dee2e6',
-    textAlign: 'left' as 'left',
-    fontWeight: '600',
-    position: 'sticky' as 'sticky',
-    top: 0,
-  },
-  td: {
-    padding: '10px',
-    borderBottom: '1px solid #dee2e6',
-  },
-  actionButtons: {
-    display: 'flex',
-    gap: '15px',
-    marginTop: '25px',
-    justifyContent: 'center',
-  },
-  confirmButton: {
-    padding: '12px 30px',
-    background: '#28a745',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontWeight: '600',
-    fontSize: '16px',
-  },
-  cancelButton: {
-    padding: '12px 30px',
-    background: '#6c757d',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontWeight: '600',
-    fontSize: '16px',
-  },
-};

@@ -58,12 +58,12 @@ export default function Expenses() {
       
       // Show budget alert if exceeded
       if (response.alert) {
-        alert(`${response.alert}`);
+        alert(`⚠️ ${response.alert}`);
       }
     } catch (err: any) {
       // Handle duplicate expense error
       if (err.message && err.message.includes('Duplicate expense')) {
-        alert('Duplicate Expense!\n\nAn expense with the same amount, date, description, and merchant already exists.');
+        alert('❌ Duplicate Expense!\n\nAn expense with the same amount, date, description, and merchant already exists.');
       } else {
         alert(err.message);
       }
@@ -94,12 +94,12 @@ export default function Expenses() {
   };
 
   return (
-    <div className="min-vh-100">
+    <div className="min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
       <Navigation />
 
-      <main className="container py-4" style={{ maxWidth: '1200px' }}>
+      <main className="py-4" style={{ marginLeft: '250px', padding: '2rem' }}>
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="mb-0">Expenses</h2>
+          <h2 className="mb-0 fw-bold">Expenses</h2>
           <button 
             onClick={() => setShowForm(!showForm)} 
             className="btn btn-primary"

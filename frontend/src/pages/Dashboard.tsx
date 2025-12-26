@@ -58,12 +58,13 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-vh-100">
+    <div className="min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
       <Navigation />
 
-      <main className="container py-4" style={{ maxWidth: '1200px' }}>
+      <main className="py-4" style={{ marginLeft: '250px', padding: '2rem' }}>
+        {/* Page Title */}
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="mb-0">Dashboard</h2>
+          <h2 className="mb-0 fw-bold">Dashboard</h2>
           <div className="d-flex gap-2">
             <button onClick={() => handleExport('excel')} className="btn btn-success btn-sm">
               📊 Export Excel
@@ -193,7 +194,7 @@ export default function Dashboard() {
           </div>
 
           {/* Pie Chart */}
-          <div className="col-lg-5">
+          {/* <div className="col-lg-5">
             <div className="card shadow-sm">
               <div className="card-body">
                 <h3 className="card-title h5 mb-4">Category Distribution (Pie Chart)</h3>
@@ -233,7 +234,7 @@ export default function Dashboard() {
                       })()}
                     </svg>
                     {/* Legend */}
-                    <div className="mt-3">
+                    {/* <div className="mt-3">
                       {Object.entries(stats.expensesByCategory).map(([category, value], index) => {
                         const total = Object.values(stats.expensesByCategory || {}).reduce((a, b) => a + (b as number), 0);
                         const percentage = ((value as number) / total) * 100;
@@ -261,7 +262,7 @@ export default function Dashboard() {
                 )}
               </div>
             </div>
-          </div>
+          </div>  */}
         </div>
 
         {/* Recent Expenses */}

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../api';
 
 export default function Signup () {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -13,6 +14,16 @@ export default function Signup () {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!username.trim()) {
+      setError('Username is required');
+      return;
+    }
+
+    if (username.length < 3) {
+      setError('Username must be at least 3 characters');
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
@@ -27,7 +38,7 @@ export default function Signup () {
     // setLoading(true);
 
     try {
-      await authAPI.signup(email, password);
+      await authAPI.signup(username, email, password);
       // Cookie is set automatically, force reload to trigger auth check
       window.location.href = '/dashboard';
     } catch (err: any) {
@@ -46,6 +57,18 @@ export default function Signup () {
           <h2 className="text-center h4 mb-4">Create Account</h2>
           
           <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label className="form-label">Username</label>
+              <input
+                type="text"
+                className="form-control"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Choose a username"
+                required
+              />
+            </div>
+
             <div className="mb-3">
               <label className="form-label">Email</label>
               <input

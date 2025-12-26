@@ -83,7 +83,7 @@ exports.exportToPDF = async(req,res) => {
         expenses.forEach(exp => {
             const date = exp.date.toISOString().split('T')[0]
             const merchant = (exp.merchant || 'N/A').substring(0,18).padEnd(20)
-            const line = `${date}  ${exp.category.padEnd(15)}  ${exp.description.substring(0,22).padEnd(25)}  ${merchant}  ₹${exp.amount}`
+            const line = `${date}     ${exp.category.padEnd(15)}       ${exp.description.substring(0,22).padEnd(25)}     ${merchant}     ₹${exp.amount}`
             doc.fontSize(10).text(line)
             total += exp.amount
         })

@@ -8,7 +8,7 @@ const Expense = require('../model/Expense');
 const Budget = require('../model/Budget');
 const Goal = require('../model/Goal');
 
-dotenv.config();
+// dotenv.config();
 
 // Load sample data from db.json
 const sampleData = JSON.parse(
@@ -23,11 +23,11 @@ const sampleData = JSON.parse(
 const initDatabase = async () => {
     try {
         // Connect to MongoDB
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log('Connected to MongoDB');
+        // await mongoose.connect(process.env.MONGO_URI);
+        // console.log('Connected to MongoDB');
 
         // Optional: Clear existing data (uncomment if you want fresh start)
-        // await clearDatabase();
+        await clearDatabase();
 
         // Create dummy data
         const users = await createUsers();
@@ -35,10 +35,9 @@ const initDatabase = async () => {
         await createBudgets(users);
         await createGoals(users);
 
-        process.exit(0);
+        console.log('✅ Database initialization completed successfully!');
     } catch (error) {
-        console.error('Error initializing database:', error.message);
-        process.exit(1);
+        console.error('❌ Error initializing database:', error.message);
     }
 };
 
@@ -191,9 +190,29 @@ const createGoals = async (users) => {
     }
 };
 
-// Execute the initialization
+// Execute the initialization (only when run directly, not when imported)
 if (require.main === module) {
-    initDatabase();
+    const mongoose = require('mongoose');
+    const dotenv = require('dotenv');
+    
+    dotenv.config();
+    
+    const runInit = async () => {
+        try {
+            await mongoose.connect(process.env.MONGO_URI);
+            console.log('Connected to MongoDB');
+            
+            await initDatabase();
+            
+            console.log('\nDatabase initialization completed! You can now start the server.');
+            process.exit(0);
+        } catch (error) {
+            console.error('Initialization failed:', error.message);
+            process.exit(1);
+        }
+    };
+    
+    runInit();
 }
 
-module.exports = { initDatabase, clearDatabase };
+module.exports = initDatabase

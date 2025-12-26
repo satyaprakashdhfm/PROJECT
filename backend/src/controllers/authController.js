@@ -15,9 +15,12 @@ const jwt = require('jsonwebtoken')
 exports.registerUser = async(req,res) => {
     
     try{
-        const {email,password} = req.body
+        const {username, email, password} = req.body
       
-        if(!email || !password) return res.status(400).json({error:"Email and password are required"});
+        if(!username || !email || !password) return res.status(400).json({error:"Username, email and password are required"});
+        
+        // Username validation
+        if(username.length < 3) return res.status(400).json({error:"Username must be at least 3 characters"});
         
         // Email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -26,19 +29,23 @@ exports.registerUser = async(req,res) => {
         // Password validation
         if(password.length < 6) return res.status(400).json({error:"Password must be at least 6 characters"});
         
-        const userExists = await User.findOne({email})
+        // Check if username or email already exists
+        const usernameExists = await User.findOne({username})
+        if(usernameExists) return res.status(400).json({error:"Username already taken"})
         
-        if(userExists) return res.status(400).json({error:"User already exists"})
+        const emailExists = await User.findOne({email})
+        if(emailExists) return res.status(400).json({error:"Email already exists"})
         
         const hashPassword = await bcrypt.hash(password,10)
 
-        const user = await User.create({   
+        const user = await User.create({
+            username,
             email,
             password:hashPassword
         }) 
 
         // Create token and set cookie for immediate login after signup
-        const token = jwt.sign({id: user._id}, process.env.JWT_SECRET, {expiresIn: "1d"});
+        const token = jwt.sign({id: user._id, username: user.username}, process.env.JWT_SECRET, {expiresIn: "1d"});
         
         res.cookie('token', token, {
             httpOnly: true,
@@ -47,7 +54,7 @@ exports.registerUser = async(req,res) => {
             maxAge: 24 * 60 * 60 * 1000
         });
 
-        res.status(201).json({message:"User registered successfully"});
+        res.status(201).json({message:"User registered successfully", username: user.username});
     }
     catch(error){ 
         res.status(400).json({error:"Invalid request body"})
@@ -70,7 +77,7 @@ exports.loginUser = async(req,res) => {
             return res.status(400).json({error:"Invalid credentials"})
         }
 
-        const token = jwt.sign({id:user._id},
+        const token = jwt.sign({id:user._id, username: user.username},
                                process.env.JWT_SECRET,
                                {expiresIn:"1d"});
         
@@ -82,7 +89,7 @@ exports.loginUser = async(req,res) => {
             maxAge: 24 * 60 * 60 * 1000 // 1 day
         });
         
-        res.status(200).json({message: "Login successful"});
+        res.status(200).json({message: "Login successful", username: user.username});
     }
     catch(error){
         res.status(401).json({error:"Invalid credentials"})
@@ -124,12 +131,20 @@ exports.logoutUser = (req, res) => {
 // Verify if user is authenticated (for protected routes)
 exports.verifyAuth = async (req, res) => {
     try {
+        // Fetch user from database to get username
+        const user = await User.findById(req.user.id).select('username email');
+        
+        if (!user) {
+            return res.status(401).json({authenticated: false});
+        }
+        
         // If middleware passed, user is authenticated
         res.status(200).json({
             authenticated: true,
             user: {
                 id: req.user.id,
-                email: req.user.email
+                username: user.username,
+                email: user.email
             }
         });
     } catch (error) {

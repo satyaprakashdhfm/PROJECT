@@ -51,12 +51,12 @@ export default function Budgets() {
   };
 
   return (
-    <div className="min-vh-100">
+    <div className="min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
       <Navigation />
 
-      <main className="container py-4" style={{ maxWidth: '1200px' }}>
+      <main className="py-4" style={{ marginLeft: '250px', padding: '2rem' }}>
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="mb-0">Budgets</h2>
+          <h2 className="mb-0 fw-bold">Budgets</h2>
           <button 
             onClick={() => setShowForm(!showForm)} 
             className="btn btn-primary"

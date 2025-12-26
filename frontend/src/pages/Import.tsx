@@ -271,16 +271,16 @@ export default function Import() {
 const styles: Record<string, React.CSSProperties> = {
   container: {
     minHeight: '100vh',
-    background: '#f5f5f5',
+    background: '#f8f9fa',
   },
   main: {
-    maxWidth: '800px',
-    margin: '0 auto',
-    padding: '40px 20px',
+    marginLeft: '250px',
+    padding: '2rem',
   },
   pageTitle: {
     marginBottom: '30px',
     color: '#333',
+    fontWeight: 'bold',
   },
   card: {
     background: 'white',

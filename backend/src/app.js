@@ -10,9 +10,12 @@ const budgetRoute = require('./routes/budgetRoutes')
 const dashboardRoute = require('./routes/dashboardRoutes')
 const exportRoute = require('./routes/exportRoutes')
 const goalRoute = require('./routes/goalRoutes')
+const initDatabase  = require('./utilities/initDatabase')
 
 dotenv.config()
-connectDb()
+connectDb().then(()=>{
+    initDatabase()
+})
 const app = express()
 
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }))

@@ -27,10 +27,10 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 
 // Auth API
 export const authAPI = {
-  signup: (email: string, password: string) =>
+  signup: (username: string, email: string, password: string) =>
     request('/auth/signup', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ username, email, password }),
     }),
   
   login: (email: string, password: string) =>

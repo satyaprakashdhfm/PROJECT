@@ -126,7 +126,7 @@ export default function Dashboard() {
         </div>
 
         {/* Category Breakdown */}
-        <div className="row g-3 mb-4">
+        <div className="row" style={{justifyContent:"center"}}>
           {/* Bar Chart */}
           <div className="col-lg-7">
             <div className="card shadow-sm">
@@ -269,7 +269,7 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Expenses */}
-        <div className="card shadow-sm">
+        <div className="card shadow-sm mt-2">
           <div className="card-body">
             <h3 className="card-title h5 mb-3">Recent Expenses</h3>
             <div className="d-flex flex-column gap-2">

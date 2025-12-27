@@ -54,7 +54,7 @@ export default function Navigation() {
            }}>
         <div className="d-flex align-items-center gap-3">
           <div className="text-end">
-            <div className="fw-semibold text-dark" style={{ fontSize: '0.95rem' }}>{username || 'User'}</div>
+            <div className="fw-semibold text-dark" style={{ fontSize: '0.95rem' }}>Welcome,  {username || 'User'}</div>
           </div>
           <img 
             src="/src/public/profile_icon.png" 

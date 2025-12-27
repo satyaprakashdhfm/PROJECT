@@ -125,7 +125,7 @@ exports.exportToPDF = async(req,res) => {
         doc.moveTo(col1, y).lineTo(550, y).stroke()
         y += 15
         doc.fontSize(14).font('Helvetica-Bold')
-        doc.text(`Total: ₹${total.toFixed(2)}`, 50, y, { width: 500, align: 'center' })
+        doc.text(`Total: ${total.toFixed(2)}`, 50, y, { width: 500, align: 'center' })
 
         doc.end()
     }

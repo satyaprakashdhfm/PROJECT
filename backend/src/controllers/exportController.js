@@ -61,7 +61,7 @@ exports.exportToPDF = async(req,res) => {
     try{
         const expenses = await Expense.find({user: req.user.id}).sort({date: -1})
 
-        const doc = new PDFDocument()
+        const doc = new PDFDocument({ margin: 50 })
         
         res.setHeader('Content-Type', 'application/pdf')
         res.setHeader('Content-Disposition', 'attachment; filename=expenses.pdf')
@@ -69,28 +69,63 @@ exports.exportToPDF = async(req,res) => {
         doc.pipe(res)
 
         // Add title
-        doc.fontSize(20).text('Expense Report', {align: 'center'})
-        doc.moveDown()
+        doc.fontSize(20).text('Expense Report', { align: 'center' })
+        doc.moveDown(2)
 
-        // Add table header
-        doc.fontSize(12).text('Date          Category          Description              Merchant              Amount', {
-            underline: true
-        })
-        doc.moveDown(0.5)
+        // Define column positions
+        const col1 = 50   // Date
+        const col2 = 120  // Category
+        const col3 = 210  // Description
+        const col4 = 340  // Merchant
+        const col5 = 480  // Amount (right-aligned)
+
+        let y = doc.y
+
+        // Add table header with underline
+        doc.fontSize(12).font('Helvetica-Bold')
+        doc.text('Date', col1, y, { width: 70, align: 'left' })
+        doc.text('Category', col2, y, { width: 90, align: 'left' })
+        doc.text('Description', col3, y, { width: 130, align: 'left' })
+        doc.text('Merchant', col4, y, { width: 140, align: 'left' })
+        doc.text('Amount', col5, y, { width: 70, align: 'right' })
+        
+        y += 20
+        doc.moveTo(col1, y).lineTo(550, y).stroke()
+        y += 10
 
         // Add expenses
+        doc.font('Helvetica').fontSize(10)
         let total = 0
+        
         expenses.forEach(exp => {
+            // Check if we need a new page
+            if (y > 720) {
+                doc.addPage()
+                y = 50
+            }
+
             const date = exp.date.toISOString().split('T')[0]
-            const merchant = (exp.merchant || 'N/A').substring(0,18).padEnd(20)
-            const line = `${date}     ${exp.category.padEnd(15)}       ${exp.description.substring(0,22).padEnd(25)}     ${merchant}     ₹${exp.amount}`
-            doc.fontSize(10).text(line)
+            const category = exp.category || 'N/A'
+            const description = exp.description.length > 25 ? exp.description.substring(0, 22) + '...' : exp.description
+            const merchant = exp.merchant ? (exp.merchant.length > 20 ? exp.merchant.substring(0, 17) + '...' : exp.merchant) : 'N/A'
+            const amount = exp.amount.toString()
+
+            doc.text(date, col1, y, { width: 70, align: 'left' })
+            doc.text(category, col2, y, { width: 90, align: 'left' })
+            doc.text(description, col3, y, { width: 130, align: 'left' })
+            doc.text(merchant, col4, y, { width: 140, align: 'left' })
+            doc.text(amount, col5, y, { width: 70, align: 'right' })
+            
+            y += 20
             total += exp.amount
         })
 
-        // Add total
-        doc.moveDown()
-        doc.fontSize(12).text(`Total: ₹${total}`, {align: 'right', bold: true})
+        // Add total in the center
+        y += 20
+        doc.moveTo(col1, y).lineTo(550, y).stroke()
+        y += 15
+        doc.fontSize(14).font('Helvetica-Bold')
+        doc.text(`Total: ₹${total.toFixed(2)}`, 50, y, { width: 500, align: 'center' })
 
         doc.end()
     }

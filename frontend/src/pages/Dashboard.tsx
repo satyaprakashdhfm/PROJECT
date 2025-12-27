@@ -273,7 +273,7 @@ export default function Dashboard() {
           <div className="card-body">
             <h3 className="card-title h5 mb-3">Recent Expenses</h3>
             <div className="d-flex flex-column gap-2">
-              {stats?.recentExpenses?.slice(0, 5).map((exp) => (
+              {stats?.recentExpenses?.slice(0, 10).map((exp) => (
                 <div key={exp._id} className="d-flex justify-content-between align-items-center p-3 bg-light rounded">
                   <div>
                     <p className="mb-1 fw-medium">{exp.description}</p>

@@ -35,9 +35,9 @@ const initDatabase = async () => {
         await createBudgets(users);
         await createGoals(users);
 
-        console.log('✅ Database initialization completed successfully!');
+        console.log('Database initialization completed successfully!');
     } catch (error) {
-        console.error('❌ Error initializing database:', error.message);
+        console.error('Error initializing database:', error.message);
     }
 };
 
@@ -67,10 +67,11 @@ const createUsers = async () => {
             let user = await User.findOne({ email: userData.email });
             if (!user) {
                 user = await User.create({
+                    username: userData.username,
                     email: userData.email,
                     password
                 });
-                console.log(`Created user: ${userData.email}`);
+                console.log(`Created user: ${userData.username} (${userData.email})`);
             } else {
                 console.log(`User already exists: ${userData.email}`);
             }

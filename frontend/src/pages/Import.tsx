@@ -106,7 +106,7 @@ export default function Import() {
     <div className="min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
       <Navigation />
 
-      <main className="py-4" style={{ marginLeft: '250px', padding: '2rem' }}>
+      <main className="py-4" style={{ marginLeft: '250px', marginTop: '60px', padding: '2rem' }}>
         <h2 className="mb-4 fw-bold">Import Expenses</h2>
 
         <div className="card shadow-sm">

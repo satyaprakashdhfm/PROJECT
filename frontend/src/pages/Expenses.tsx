@@ -97,7 +97,7 @@ export default function Expenses() {
     <div className="min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
       <Navigation />
 
-      <main className="py-4" style={{ marginLeft: '250px', padding: '2rem' }}>
+      <main className="py-4" style={{ marginLeft: '250px', marginTop: '60px', padding: '2rem' }}>
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h2 className="mb-0 fw-bold">Expenses</h2>
           <button 

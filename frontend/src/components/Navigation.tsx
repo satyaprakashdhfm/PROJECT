@@ -43,33 +43,54 @@ export default function Navigation() {
   ];
 
   return (
-    <div className="d-flex flex-column vh-100 text-white position-fixed" 
-         style={{ 
-           width: '250px',
-           background: 'linear-gradient(180deg, #667eea 0%, #764ba2 100%)',
-           zIndex: 1000,
-           boxShadow: '2px 0 10px rgba(0,0,0,0.1)'
-         }}>
-      
-      {/* Logo and Brand */}
-      <div className="p-4 border-bottom border-white border-opacity-25">
+    <>
+      {/* Top Navigation Bar with Profile */}
+      <div className="position-fixed top-0 end-0 bg-white shadow-sm d-flex align-items-center justify-content-end px-4 py-2" 
+           style={{ 
+             left: '250px',
+             zIndex: 1001,
+             height: '60px',
+             borderBottom: '1px solid #e0e0e0'
+           }}>
         <div className="d-flex align-items-center gap-3">
+          <div className="text-end">
+            <div className="fw-semibold text-dark" style={{ fontSize: '0.95rem' }}>{username || 'User'}</div>
+          </div>
           <img 
-            src="/src/public/icon.png" 
-            alt="Logo" 
-            style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+            src="/src/public/profile_icon.png" 
+            alt="Profile" 
+            className="rounded-circle"
+            style={{ 
+              width: '40px', 
+              height: '40px', 
+              objectFit: 'cover',
+              border: '2px solid #667eea'
+            }}
           />
-          <span className="fw-bold fs-5" style={{ letterSpacing: '1px' }}>WEALTHWISE</span>
         </div>
       </div>
 
-      {/* Welcome Message */}
-      {username && (
-        <div className="px-4 py-3 bg-white bg-opacity-10">
-          <div className="text-white text-opacity-75 small">Welcome,</div>
-          <div className="fw-semibold">{username}</div>
+      {/* Sidebar */}
+      <div className="d-flex flex-column position-fixed top-0 bottom-0 text-white" 
+           style={{ 
+             width: '250px',
+             background: 'linear-gradient(180deg, #667eea 0%, #764ba2 100%)',
+             zIndex: 1000,
+             boxShadow: '2px 0 10px rgba(0,0,0,0.1)',
+             overflowY: 'auto'
+           }}>
+        
+        {/* Logo and Brand */}
+        <div className="p-4 border-bottom border-white border-opacity-25">
+          <div className="d-flex align-items-center gap-3">
+            <img 
+              src="/src/public/icon.png" 
+              alt="Logo" 
+              style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+            />
+            <span className="fw-bold fs-5" style={{ letterSpacing: '1px' }}>WEALTHWISE</span>
+          </div>
         </div>
-      )}
 
       {/* Navigation Items */}
       <nav className="flex-grow-1 py-3">
@@ -120,9 +141,10 @@ export default function Navigation() {
             transition: 'all 0.2s'
           }}
         >
-          Logout
+          🚪 Logout
         </button>
       </div>
     </div>
+    </>
   );
 }

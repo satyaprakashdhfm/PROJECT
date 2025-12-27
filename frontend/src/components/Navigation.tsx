@@ -81,7 +81,7 @@ export default function Navigation() {
            }}>
         
         {/* Logo and Brand */}
-        <div className="p-4 border-bottom border-white border-opacity-25">
+        <div className="p-3 border-bottom border-white border-opacity-25">
           <div className="d-flex align-items-center gap-3">
             <img 
               src="/src/public/icon.png" 

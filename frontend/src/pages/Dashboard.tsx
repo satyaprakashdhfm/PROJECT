@@ -143,8 +143,11 @@ export default function Dashboard() {
                       {Object.entries(stats.expensesByCategory).map(([category, total], index) => {
                         const maxValue = Math.max(...Object.values(stats.expensesByCategory || {}));
                         const barHeight = ((total as number) / maxValue) * 200;
-                        const barWidth = 80;
-                        const x = 80 + index * 120;
+                        const categoriesCount = Object.keys(stats.expensesByCategory).length;
+                        const availableWidth = 530; // Total width (580 - 50 for axis)
+                        const spacing = availableWidth / categoriesCount;
+                        const barWidth = Math.min(spacing * 0.7, 80); // 70% of spacing, max 80px
+                        const x = 50 + spacing * index + (spacing - barWidth) / 2;
                         const y = 250 - barHeight;
                         const color = getCategoryColor(index);
                         

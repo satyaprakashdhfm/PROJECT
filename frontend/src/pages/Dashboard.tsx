@@ -19,7 +19,7 @@ export default function Dashboard() {
       if (filters.endDate) params.append('endDate', filters.endDate);
       
       const response: any = await dashboardAPI.getStats(params.toString());
-      setStats(response.data || response);
+      setStats(response.data);
     } catch (err) {
       console.error(err);
     } finally {

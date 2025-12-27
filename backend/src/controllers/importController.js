@@ -1,11 +1,3 @@
-/**
- * User Story 3: Bank Account Import
- * Description: As a user, I should be able to import my expenses from my bank account into the application.
- * 
- * Features:
- * - importFromBank() - Import expenses from bank CSV/JSON file and auto-categorize
- */
-
 const Expense = require('../model/Expense')
 const categorizeExpense = require('../utilities/categorize')
 

@@ -1,21 +1,3 @@
-/**
- * User Story 7: Financial Goals & Progress Tracking + Custom Reports
- * Description: As a user, I should be able to set financial goals, track progress, 
- *              and create custom reports that provide insights into spending patterns.
- * 
- * Features:
- * GOALS:
- * - createGoal() - Set a new financial goal
- * - getGoals() - Fetch all user goals with progress
- * - updateGoalProgress() - Update progress towards goal
- * - deleteGoal() - Remove a goal
- * 
- * REPORTS:
- * - getCategoryReport() - Detailed category-wise spending analysis with budget comparison
- * - getTimeBasedReport() - Daily/weekly/monthly spending reports
- * - getSpendingTrends() - Spending trends with insights and patterns
- */
-
 const Goal = require('../model/Goal')
 const Expense = require('../model/Expense')
 const Budget = require('../model/Budget')

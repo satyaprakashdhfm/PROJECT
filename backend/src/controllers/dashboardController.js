@@ -1,13 +1,3 @@
-/**
- * User Story 5: Expense Dashboard
- * Description: As a user, I should be able to view my expenses on a dashboard with graphs and charts.
- * 
- * Features:
- * - getSummary() - Get complete dashboard data including total expenses, expenses by category, 
- *                  expenses by month, recent expenses, budget comparison, and statistics
- *                  Supports filtering by category, date range, and merchant
- */
-
 const Expense = require('../model/Expense')
 const Budget = require('../model/Budget')
 

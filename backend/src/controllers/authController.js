@@ -1,13 +1,3 @@
-/**
- * User Story 1: Account Creation and Authentication
- * Description: As a user, I should be able to create an account on Wealthwise and log in to the application.
- * 
- * Features:
- * - registerUser() - Create new user account with email and password
- * - loginUser() - Login with credentials and receive JWT token
- * - resetPassword() - Reset user password
- */
-
 const User = require('../model/User')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')

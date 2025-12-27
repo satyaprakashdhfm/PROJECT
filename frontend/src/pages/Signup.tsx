@@ -124,7 +124,6 @@ export default function Signup () {
             <span 
               onClick={() => navigate('/login')} 
               className="text-primary fw-semibold" 
-              style={{ cursor: 'pointer' }}
             >
               Login
             </span>

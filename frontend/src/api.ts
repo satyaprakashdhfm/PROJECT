@@ -19,7 +19,7 @@ axiosInstance.interceptors.response.use(
 );
 
 // Auth API
-export const authAPI = {
+export const    authAPI = {
   signup: (username: string, email: string, password: string) =>
     axiosInstance.post('/auth/signup', { username, email, password }),
   

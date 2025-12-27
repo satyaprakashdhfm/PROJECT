@@ -1,15 +1,3 @@
-/**
- * User Story 4: Budget Setting
- * Description: As a user, I should be able to set budgets for different expense categories.
- * 
- * Features:
- * - setBudget() - Set or update budget for a category
- * - getBudgets() - Fetch all user budgets
- * - getBudgetByCategory() - Get specific budget by category
- * - deleteBudget() - Remove a budget
- * - getBudgetPlanner() - Plan future budgets and compare with past spending patterns
- */
-
 const Budget = require('../model/Budget')
 const Expense = require('../model/Expense')
 

@@ -1,12 +1,3 @@
-/**
- * User Story 6: Data Export
- * Description: As a user, I should be able to export my expense data to Excel or PDF formats.
- * 
- * Features:
- * - exportToExcel() - Export all expenses to Excel file
- * - exportToPDF() - Export all expenses to PDF file
- */
-
 const Expense = require('../model/Expense')
 const ExcelJS = require('exceljs')
 const PDFDocument = require('pdfkit')

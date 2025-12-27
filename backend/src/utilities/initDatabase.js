@@ -22,11 +22,6 @@ const sampleData = JSON.parse(
 
 const initDatabase = async () => {
     try {
-        // Connect to MongoDB
-        // await mongoose.connect(process.env.MONGO_URI);
-        // console.log('Connected to MongoDB');
-
-        // Optional: Clear existing data (uncomment if you want fresh start)
         await clearDatabase();
 
         // Create dummy data
@@ -192,28 +187,28 @@ const createGoals = async (users) => {
 };
 
 // Execute the initialization (only when run directly, not when imported)
-if (require.main === module) {
-    const mongoose = require('mongoose');
-    const dotenv = require('dotenv');
+// if (require.main === module) {
+//     const mongoose = require('mongoose');
+//     const dotenv = require('dotenv');
     
-    dotenv.config();
+//     dotenv.config();
     
-    const runInit = async () => {
-        try {
-            await mongoose.connect(process.env.MONGO_URI);
-            console.log('Connected to MongoDB');
+//     const runInit = async () => {
+//         try {
+//             await mongoose.connect(process.env.MONGO_URI);
+//             console.log('Connected to MongoDB');
             
-            await initDatabase();
+//             await initDatabase();
             
-            console.log('\nDatabase initialization completed! You can now start the server.');
-            process.exit(0);
-        } catch (error) {
-            console.error('Initialization failed:', error.message);
-            process.exit(1);
-        }
-    };
+//             console.log('\nDatabase initialization completed! You can now start the server.');
+//             process.exit(0);
+//         } catch (error) {
+//             console.error('Initialization failed:', error.message);
+//             process.exit(1);
+//         }
+//     };
     
-    runInit();
-}
+//     runInit();
+// }
 
 module.exports = initDatabase

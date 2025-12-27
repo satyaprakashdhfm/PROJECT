@@ -1,15 +1,3 @@
-/**
- * User Story 2: Manual Expense Entry
- * Description: As a user, I should be able to enter my daily expenses manually into the application.
- * 
- * Features:
- * - addExpense() - Add new expense with amount, date, category, description, and merchant
- * - getExpenses() - Get all user expenses with optional filters (category, date range, merchant)
- * - getExpenseById() - Get single expense by ID
- * - updateExpense() - Update existing expense
- * - deleteExpense() - Delete expense
- */
-
 const Expense = require('../model/Expense')
 const Budget = require('../model/Budget')
 

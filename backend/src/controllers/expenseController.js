@@ -36,28 +36,40 @@ const addExpense = async (req,res) => {
             });
         }
 
+        // Check budget BEFORE adding expense
+        const budget = await Budget.findOne({userId:req.user.id, category});
+        
+        if(budget) {
+            // Calculate current total spent in this category
+            const total = await Expense.aggregate([
+                {$match:{
+                    user:req.user.id, category}},
+                {$group:{
+                  _id: null,
+                  totalSpent:{$sum:"$amount"}}}
+            ]);
+
+            const currentSpent = total[0]?.totalSpent || 0;
+            const newTotal = currentSpent + parseFloat(amount);
+
+            // Prevent adding expense if it exceeds budget
+            if(newTotal > budget.budget_amount){
+                return res.status(400).json({
+                    error: "Budget limit exceeded",
+                    message: `Adding this expense will exceed your budget for ${category}. Current: ₹${currentSpent}, Budget: ₹${budget.budget_amount}, After adding: ₹${newTotal}`,
+                    currentSpent,
+                    budgetAmount: budget.budget_amount,
+                    proposedTotal: newTotal
+                });
+            }
+        }
+
+        // Only create expense if budget check passes
         const expense = await Expense.create({
             user:req.user.id,
             amount,date,description,category,merchant});
 
-        //calculating total spent in a category
-        const total = await Expense.aggregate([
-            {$match:{
-                user:expense.user, category}},
-            {$group:{
-              _id: null,
-              totalSpent:{$sum:"$amount"}}}
-        ])
-
-        const spent = total[0]?.totalSpent || 0; 
-        const budget = await Budget.findOne({userId:req.user.id,category});
-
-        let alert = null
-        if(budget && spent > budget.budget_amount){
-            alert = `Budget exceeded for ${category}`;
-        }
-
-         res.status(201).json({message: "Expense added successfully", alert})
+         res.status(201).json({message: "Expense added successfully"})
     }
     catch(error){
         res.status(400).json({error: "Invalid request body"})

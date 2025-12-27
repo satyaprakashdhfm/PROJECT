@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { expenseAPI } from '../api';
 import { Expense, CATEGORIES } from '../types';
 import Navigation from '../components/Navigation';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Expenses() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -55,17 +57,33 @@ export default function Expenses() {
       setShowForm(false);
       resetForm();
       loadExpenses();
-      
-      // Show budget alert if exceeded
-      if (response.alert) {
-        alert(`⚠️ ${response.alert}`);
-      }
+      toast.success('Expense added successfully!', {
+        position: 'bottom-right',
+        autoClose: 3000,
+      });
     } catch (err: any) {
+      // Handle budget exceeded error
+      if (err.response?.data?.currentSpent !== undefined) {
+        toast.error('Budget Limit Exceeded, Cannot Add Expense', {
+          position: 'bottom-right',
+          autoClose: 5000,
+          style: {
+            backgroundColor: '#7a3a3a',
+            color: '#ffffff',
+          },
+        });
+      }
       // Handle duplicate expense error
-      if (err.message && err.message.includes('Duplicate expense')) {
-        alert('❌ Duplicate Expense!\n\nAn expense with the same amount, date, description, and merchant already exists.');
+      else if (err.message && err.message.includes('Duplicate expense')) {
+        toast.error('Duplicate Expense!\n\nAn expense with the same amount, date, description, and merchant already exists.', {
+          position: 'bottom-right',
+          autoClose: 5000,
+        });
       } else {
-        alert(err.message);
+        toast.error(err.message, {
+          position: 'bottom-right',
+          autoClose: 3000,
+        });
       }
     }
   };
@@ -277,6 +295,7 @@ export default function Expenses() {
           )}
         </div>
       </main>
+      <ToastContainer />
     </div>
   );
 }

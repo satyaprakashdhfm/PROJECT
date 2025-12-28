@@ -123,7 +123,7 @@ export default function Signup () {
             Already have an account?{' '}
             <span 
               onClick={() => navigate('/login')} 
-              className="text-primary fw-semibold" 
+              className="text-primary fw-semibold" style={{ cursor: 'pointer' }}
             >
               Login
             </span>

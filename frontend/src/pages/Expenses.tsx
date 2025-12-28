@@ -127,58 +127,6 @@ export default function Expenses() {
           </button>
         </div>
 
-        {/* Filter Section */}
-        <div className="card shadow-sm mb-4">
-          <div className="card-body">
-            <h5 className="card-title mb-3">🔍 Filters</h5>
-            <div className="row g-3">
-              <div className="col-md-4">
-                <label className="form-label">Category</label>
-                <select
-                  className="form-select"
-                  value={filterCategory}
-                  onChange={(e) => setFilterCategory(e.target.value)}
-                >
-                  <option value="">All Categories</option>
-                  {CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="col-md-3">
-                <label className="form-label">Start Date</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  value={filterStartDate}
-                  onChange={(e) => setFilterStartDate(e.target.value)}
-                />
-              </div>
-
-              <div className="col-md-3">
-                <label className="form-label">End Date</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  value={filterEndDate}
-                  onChange={(e) => setFilterEndDate(e.target.value)}
-                />
-              </div>
-
-              <div className="col-md-2 d-flex align-items-end">
-                <button 
-                  type="button"
-                  onClick={clearFilters}
-                  className="btn btn-secondary w-100"
-                >
-                  Clear
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {showForm && (
           <div className="card shadow-sm mb-4">
             <div className="card-body">
@@ -250,6 +198,59 @@ export default function Expenses() {
             </div>
           </div>
         )}
+
+        {/* Filter Section */}
+        <div className="card shadow-sm mb-4">
+          <div className="card-body">
+            <h5 className="card-title mb-3">🔍 Filters</h5>
+            <div className="row g-3">
+              <div className="col-md-4">
+                <label className="form-label">Category</label>
+                <select
+                  className="form-select"
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                >
+                  <option value="">All Categories</option>
+                  {CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="col-md-3">
+                <label className="form-label">Start Date</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={filterStartDate}
+                  onChange={(e) => setFilterStartDate(e.target.value)}
+                />
+              </div>
+
+              <div className="col-md-3">
+                <label className="form-label">End Date</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={filterEndDate}
+                  onChange={(e) => setFilterEndDate(e.target.value)}
+                />
+              </div>
+
+              <div className="col-md-2 d-flex align-items-end">
+                <button 
+                  type="button"
+                  onClick={clearFilters}
+                  className="btn btn-secondary w-100"
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         <div className="d-flex flex-column gap-3">
           {loading ? (

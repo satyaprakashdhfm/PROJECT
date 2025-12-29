@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { authAPI } from './api';
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
@@ -18,7 +19,7 @@ function App() {
   }, []);
 
   const checkAuth = async () => {
-    try {
+    try { 
       const response: any = await authAPI.verify();
       setIsAuthenticated(response.authenticated);
     } catch (error) {
@@ -44,6 +45,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route
@@ -86,7 +88,7 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route path="/" element={<Navigate to="/dashboard" />} />
+        <Route path="/" element={<Landing />} />
       </Routes>
     </BrowserRouter>
   );

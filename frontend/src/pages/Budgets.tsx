@@ -7,6 +7,7 @@ export default function Budgets() {
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
 
   const [category, setCategory] = useState('Food');
   const [amount, setAmount] = useState('');
@@ -50,6 +51,31 @@ export default function Budgets() {
     }
   };
 
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBudget) return;
+    
+    try {
+      await budgetAPI.update(editingBudget.category, parseFloat(amount));
+      setEditingBudget(null);
+      setAmount('');
+      loadBudgets();
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
+  const startEdit = (budget: Budget) => {
+    setEditingBudget(budget);
+    setAmount(budget.budget_amount.toString());
+    setShowForm(false);
+  };
+
+  const cancelEdit = () => {
+    setEditingBudget(null);
+    setAmount('');
+  };
+
   return (
     <div className="min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
       <Navigation />
@@ -58,13 +84,49 @@ export default function Budgets() {
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h2 className="mb-0 fw-bold">Budgets</h2>
           <button 
-            onClick={() => setShowForm(!showForm)} 
+            onClick={() => {
+              setShowForm(!showForm);
+              setEditingBudget(null);
+              setAmount('');
+            }} 
             className="btn btn-primary"
             style={{ backgroundColor: '#667eea', borderColor: '#667eea' }}
           >
             {showForm ? 'Cancel' : '+ Add Budget'}
           </button>
         </div>
+
+        {editingBudget && (
+          <div className="card shadow-sm mb-4" style={{ borderLeft: '4px solid #667eea' }}>
+            <div className="card-body">
+              <h5 className="card-title mb-3">Update Budget - {editingBudget.category}</h5>
+              <form onSubmit={handleUpdate}>
+                <div className="row g-3 mb-3">
+                  <div className="col-md-8">
+                    <label className="form-label">Budget Amount (₹)</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      step="0.01"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="d-flex gap-2">
+                  <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#667eea', borderColor: '#667eea' }}>
+                    Update Budget
+                  </button>
+                  <button type="button" onClick={cancelEdit} className="btn btn-secondary">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {showForm && (
           <div className="card shadow-sm mb-4">
@@ -126,6 +188,18 @@ export default function Budgets() {
                     <h4 className="mb-0 fw-bold" style={{ color: '#667eea' }}>
                       ₹{budget.budget_amount.toFixed(2)}
                     </h4>
+                    <button 
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        startEdit(budget);
+                      }} 
+                      className="btn btn-primary btn-sm"
+                      style={{ backgroundColor: '#667eea', borderColor: '#667eea' }}
+                    >
+                      Update
+                    </button>
                     <button 
                       type="button"
                       onClick={(e) => {

@@ -47,7 +47,7 @@ export default function Expenses() {
   const handleAddExpense = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response: any = await expenseAPI.add({
+        await expenseAPI.add({
         amount: parseFloat(amount),
         date,
         category,

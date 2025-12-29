@@ -90,6 +90,42 @@ const deleteBudget = async(req,res)=>{
     }
 }
 
+const updateBudget = async(req,res)=>{
+    const {category} = req.params
+    const {budget_amount} = req.body
+
+    try{
+        if(!budget_amount){
+            return res.status(400).json({error:"Budget amount required"})
+        }
+
+        const budget = await Budget.findOneAndUpdate(
+            {
+                userId: req.user.id,
+                category
+            },
+            {
+                budget_amount
+            },
+            {
+                new: true
+            }
+        )
+
+        if(!budget) {
+            return res.status(404).json({error: "Budget not found"})
+        }
+
+        res.status(200).json({
+            message: "Budget updated successfully",
+            data: budget
+        })
+    }
+    catch(error){
+        res.status(500).json({error: "Failed to update budget"})
+    }
+}
+
 const getBudgetPlanner = async(req,res)=>{
     try{
         const budgets = await Budget.find({userId: req.user.id})
@@ -135,4 +171,4 @@ const getBudgetPlanner = async(req,res)=>{
     }
 }
 
-module.exports = {setBudget, getBudgets, getBudgetByCategory, deleteBudget, getBudgetPlanner}
+module.exports = {setBudget, getBudgets, getBudgetByCategory, deleteBudget, updateBudget, getBudgetPlanner}

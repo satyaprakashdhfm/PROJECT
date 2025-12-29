@@ -59,8 +59,8 @@ export const budgetAPI = {
   create: (budget: { category: string; budget_amount: number }) =>
     axiosInstance.post('/budgets/set', budget),
   
-  update: (id: string, budget_amount: number) =>
-    axiosInstance.put(`/budgets/${id}`, { budget_amount }),
+  update: (category: string, budget_amount: number) =>
+    axiosInstance.put(`/budgets/${category}`, { budget_amount }),
   
   delete: (category: string) =>
     axiosInstance.delete(`/budgets/${category}`),

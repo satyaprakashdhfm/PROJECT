@@ -86,7 +86,7 @@ export default function Navigation() {
             <img 
               src="/src/public/icon.png" 
               alt="Logo" 
-              style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+              style={{ width: '40px', height: '20px', objectFit: 'contain' }}
             />
             <span className="fw-bold fs-5" style={{ letterSpacing: '1px' }}>WEALTHWISE</span>
           </div>

@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
 import Budgets from './pages/Budgets';
 import Goals from './pages/Goals';
+import Reports from './pages/Reports';
 import Import from './pages/Import';
 
 function App() {
@@ -77,6 +78,14 @@ function App() {
           element={
             <PrivateRoute>
               <Goals />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <PrivateRoute>
+              <Reports />
             </PrivateRoute>
           }
         />

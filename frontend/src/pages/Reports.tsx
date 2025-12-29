@@ -19,150 +19,194 @@ axiosInstance.interceptors.response.use(
 
 export default function Reports() {
   const [reportType, setReportType] = useState('category');
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const [reportData, setReportData] = useState<any>(null);
+  const [loadingReport, setLoadingReport] = useState(false);
+  const [timePeriod, setTimePeriod] = useState('monthly'); // For time-based reports
 
   useEffect(() => {
-    loadReport();
-  }, [reportType]);
+    if (reportType) {
+      loadReport();
+    }
+  }, [reportType, timePeriod]);
 
   const loadReport = async () => {
-    setLoading(true);
+    setLoadingReport(true);
     try {
-      const response = await axiosInstance.get(`/goals/reports/${reportType}`);
-      setData(response.data || response);
+      let url = `/goals/reports/${reportType}`;
+      
+      // Add period query param for time-based reports
+      if (reportType === 'time') {
+        url += `?period=${timePeriod}`;
+      }
+      
+      const data = await axiosInstance.get(url);
+      console.log('Report data received:', data);
+      setReportData(data);
     } catch (err) {
-      console.error(err);
+      console.error('Report error:', err);
+      setReportData(null);
     } finally {
-      setLoading(false);
+      setLoadingReport(false);
     }
   };
 
   return (
-    <div className="min-vh-100">
+    <div className="min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
       <Navigation />
 
-      <main className="container py-4" style={{ maxWidth: '1200px' }}>
-        <h2 className="mb-4">Reports</h2>
-
-        {/* Report Type Selector */}
-        <div className="card shadow-sm mb-4">
-          <div className="card-body">
-            <label className="form-label">Select Report Type</label>
-            <select 
-              className="form-select"
-              value={reportType}
-              onChange={(e) => setReportType(e.target.value)}
-            >
-              <option value="category">Category Report</option>
-              <option value="time">Time-Based Report</option>
-              <option value="trends">Spending Trends</option>
-            </select>
-          </div>
+      <main className="py-4" style={{ marginLeft: '250px', marginTop: '60px', padding: '2rem' }}>
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h2 className="mb-0 fw-bold">📊 Financial Reports & Insights</h2>
         </div>
 
-        {/* Report Data */}
-        {loading ? (
-          <div className="text-center py-5">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
+        {/* Reports Section */}
+        <div className="card shadow-sm mb-4">
+          <div className="card-body">
+            <h4 className="card-title mb-3">Spending Analytics</h4>
+            
+            <div className="mb-4">
+              <label className="form-label">Select Report Type</label>
+              <select
+                className="form-select"
+                value={reportType}
+                onChange={(e) => setReportType(e.target.value)}
+              >
+                <option value="category">Spending by Category</option>
+                <option value="time">Spending Over Time</option>
+                <option value="trends">Spending Trends</option>
+              </select>
             </div>
-          </div>
-        ) : (
-          <div className="card shadow-sm">
-            <div className="card-body">
-              <h5 className="card-title mb-4">
-                {reportType === 'category' && 'Category-wise Spending'}
-                {reportType === 'time' && 'Time-Based Analysis'}
-                {reportType === 'trends' && 'Spending Trends & Insights'}
-              </h5>
-              
-              {reportType === 'category' && data?.categories && (
-                <div className="table-responsive">
-                  <table className="table table-hover">
-                    <thead>
-                      <tr>
-                        <th>Category</th>
-                        <th>Total Spent</th>
-                        <th>Budget</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.categories.map((cat: any) => (
-                        <tr key={cat.category}>
-                          <td>{cat.category}</td>
-                          <td>₹{cat.spent.toFixed(2)}</td>
-                          <td>₹{cat.budget?.toFixed(2) || 'N/A'}</td>
-                          <td>
-                            {cat.percentage && (
-                              <span className={cat.percentage > 100 ? 'text-danger' : 'text-success'}>
-                                {cat.percentage.toFixed(1)}%
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
 
-              {reportType === 'time' && data?.analysis && (
-                <div>
-                  <div className="row g-3">
-                    <div className="col-md-4">
-                      <div className="p-3 bg-light rounded">
-                        <small className="text-muted">Daily Average</small>
-                        <h4>₹{data.analysis.dailyAverage?.toFixed(2) || '0.00'}</h4>
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="p-3 bg-light rounded">
-                        <small className="text-muted">Weekly Average</small>
-                        <h4>₹{data.analysis.weeklyAverage?.toFixed(2) || '0.00'}</h4>
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="p-3 bg-light rounded">
-                        <small className="text-muted">Monthly Average</small>
-                        <h4>₹{data.analysis.monthlyAverage?.toFixed(2) || '0.00'}</h4>
-                      </div>
-                    </div>
-                  </div>
+            {loadingReport ? (
+              <div className="text-center py-4">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
                 </div>
-              )}
-
-              {reportType === 'trends' && data?.insights && (
-                <div>
-                  <h6 className="mb-3">AI Insights</h6>
-                  <ul className="list-unstyled">
-                    {data.insights.map((insight: string, index: number) => (
-                      <li key={index} className="mb-2">
-                        <span className="badge bg-info me-2">💡</span>
-                        {insight}
-                      </li>
-                    ))}
-                  </ul>
-                  {data.topCategories && (
-                    <div className="mt-4">
-                      <h6>Top Spending Categories</h6>
-                      <div className="row g-2">
-                        {data.topCategories.map((cat: any, index: number) => (
-                          <div key={index} className="col-md-4">
-                            <div className="p-2 bg-light rounded">
-                              {cat.category}: ₹{cat.total.toFixed(2)}
+              </div>
+            ) : reportData ? (
+              <div>
+                {reportType === 'category' && reportData && reportData.data && (
+                  <div>
+                    <h5 className="mb-3">Total Spending by Category</h5>
+                    {reportData.data.length === 0 ? (
+                      <p className="text-muted">No expense data available yet. Add some expenses to see category reports.</p>
+                    ) : (
+                      <div className="row g-3">
+                        {reportData.data.map((item: any) => (
+                          <div key={item.category} className="col-md-4">
+                            <div className="card">
+                              <div className="card-body">
+                                <h6 className="card-subtitle mb-2 text-muted">{item.category}</h6>
+                                <h4 className="card-title text-primary">₹{item.totalSpent.toFixed(2)}</h4>
+                                <p className="card-text small">{item.transactionCount} transactions</p>
+                                {item.budget && (
+                                  <div className="mt-2">
+                                    <small className="text-muted">
+                                      Budget: ₹{item.budget} 
+                                      {item.remaining !== null && (
+                                        <span className={item.remaining < 0 ? 'text-danger' : 'text-success'}>
+                                          {' '}({item.remaining < 0 ? 'Over' : 'Remaining'}: ₹{Math.abs(item.remaining).toFixed(2)})
+                                        </span>
+                                      )}
+                                    </small>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                         ))}
                       </div>
+                    )}
+                  </div>
+                )}
+
+                {reportType === 'time' && reportData && reportData.data && (
+                  <div>
+                    <div className="mb-3">
+                      <label className="form-label">Time Period</label>
+                      <select
+                        className="form-select"
+                        value={timePeriod}
+                        onChange={(e) => setTimePeriod(e.target.value)}
+                      >
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                      </select>
                     </div>
-                  )}
-                </div>
-              )}
-            </div>
+                    
+                    <h5 className="mb-3">{timePeriod.charAt(0).toUpperCase() + timePeriod.slice(1)} Spending Breakdown</h5>
+                    {Object.keys(reportData.data).length === 0 ? (
+                      <p className="text-muted">No expense data available yet.</p>
+                    ) : (
+                      <div className="table-responsive">
+                        <table className="table table-striped">
+                          <thead>
+                            <tr>
+                              <th>Period</th>
+                              <th>Total Spent</th>
+                              <th>Transactions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {Object.entries(reportData.data).map(([period, data]: [string, any]) => (
+                              <tr key={period}>
+                                <td>{period}</td>
+                                <td className="fw-bold">₹{data?.total?.toFixed(2) || '0.00'}</td>
+                                <td>{data?.count || 0}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {reportType === 'trends' && reportData && reportData.data && (
+                  <div>
+                    <h5 className="mb-3">Spending Trends & Insights</h5>
+                    {reportData.data.insights && reportData.data.insights.length > 0 ? (
+                      <div className="alert alert-info">
+                        {reportData.data.insights.map((insight: string, idx: number) => (
+                          <div key={idx}>• {insight}</div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-muted">No spending data available yet. Add some expenses to see trends.</p>
+                    )}
+                    
+                    {reportData.data.trends && reportData.data.trends.length > 0 && (
+                      <div className="mt-3">
+                        <h6>Monthly Trend</h6>
+                        <div className="table-responsive">
+                          <table className="table table-sm">
+                            <thead>
+                              <tr>
+                                <th>Month</th>
+                                <th>Amount</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {reportData.data.trends.map((trend: any, idx: number) => (
+                                <tr key={idx}>
+                                  <td>{trend.month}</td>
+                                  <td>₹{trend.amount.toFixed(2)}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="text-muted">Select a report type to view insights</p>
+            )}
           </div>
-        )}
+        </div>
       </main>
     </div>
   );

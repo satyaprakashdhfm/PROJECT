@@ -39,6 +39,7 @@ export default function Navigation() {
     { path: '/expenses', icon: '💰', label: 'EXPENSES' },
     { path: '/budgets', icon: '💳', label: 'BUDGETS' },
     { path: '/goals', icon: '🎯', label: 'GOALS' },
+    { path: '/reports', icon: '📈', label: 'REPORTS' },
     { path: '/import', icon: '📥', label: 'IMPORT' },
   ];
 

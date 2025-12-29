@@ -24,6 +24,15 @@ export interface Goal {
   goal: string;
   target_amount: number;
   current_amount: number;
+  deadline?: string;
+  daysRemaining?: number;
+  monthsRemaining?: number;
+  weeksRemaining?: number;
+  isOverdue?: boolean;
+  requiredMonthlySavings?: number;
+  requiredWeeklySavings?: number;
+  requiredDailySavings?: number;
+  remaining?: number;
 }
 
 export interface DashboardStats {

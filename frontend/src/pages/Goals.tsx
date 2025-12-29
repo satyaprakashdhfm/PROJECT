@@ -26,6 +26,7 @@ export default function Goals() {
 
   const [goalName, setGoalName] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
+  const [deadline, setDeadline] = useState('');
 
   // Reports section
   const [reportType, setReportType] = useState('category');
@@ -60,10 +61,12 @@ export default function Goals() {
       await goalAPI.create({
         goal: goalName,
         target_amount: parseFloat(targetAmount),
+        deadline: deadline || undefined,
       });
       setShowForm(false);
       setGoalName('');
       setTargetAmount('');
+      setDeadline('');
       loadGoals();
     } catch (err: any) {
       alert(err.message);
@@ -141,7 +144,7 @@ export default function Goals() {
             <div className="card-body">
               <form onSubmit={handleCreate}>
                 <div className="row g-3 mb-3">
-                  <div className="col-md-6">
+                  <div className="col-md-4">
                     <label className="form-label">Goal Name</label>
                     <input
                       type="text"
@@ -153,7 +156,7 @@ export default function Goals() {
                     />
                   </div>
 
-                  <div className="col-md-6">
+                  <div className="col-md-4">
                     <label className="form-label">Target Amount (₹)</label>
                     <input
                       type="number"
@@ -162,6 +165,17 @@ export default function Goals() {
                       onChange={(e) => setTargetAmount(e.target.value)}
                       step="0.01"
                       required
+                    />
+                  </div>
+
+                  <div className="col-md-4">
+                    <label className="form-label">Target Deadline (Optional)</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      value={deadline}
+                      onChange={(e) => setDeadline(e.target.value)}
+                      min={new Date().toISOString().split('T')[0]}
                     />
                   </div>
                 </div>
@@ -339,7 +353,25 @@ export default function Goals() {
               <div key={goal._id} className="card shadow-sm">
                 <div className="card-body">
                   <div className="d-flex justify-content-between align-items-start mb-3">
-                    <h5 className="card-title mb-0">{goal.goal}</h5>
+                    <div>
+                      <h5 className="card-title mb-1">{goal.goal}</h5>
+                      {goal.deadline && (
+                        <div className="small">
+                          {goal.isOverdue ? (
+                            <span className="badge bg-danger">
+                              Overdue by {Math.abs(goal.daysRemaining || 0)} days
+                            </span>
+                          ) : (
+                            <span className={`badge ${goal.daysRemaining && goal.daysRemaining < 30 ? 'bg-warning' : 'bg-info'}`}>
+                              {goal.daysRemaining} days remaining
+                            </span>
+                          )}
+                          <span className="text-muted ms-2">
+                            (Target: {new Date(goal.deadline).toLocaleDateString()})
+                          </span>
+                        </div>
+                      )}
+                    </div>
                     <div className="d-flex gap-2">
                       <button 
                         type="button"
@@ -383,9 +415,39 @@ export default function Goals() {
                     </div>
                   </div>
 
-                  <p className="text-muted mb-0 small">
-                    ₹{goal.current_amount.toFixed(2)} / ₹{goal.target_amount.toFixed(2)}
-                  </p>
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <p className="text-muted mb-0 small">
+                      ₹{goal.current_amount.toFixed(2)} / ₹{goal.target_amount.toFixed(2)}
+                    </p>
+                    <p className="text-muted mb-0 small">
+                      Remaining: ₹{(goal.remaining || 0).toFixed(2)}
+                    </p>
+                  </div>
+
+                  {goal.deadline && !goal.isOverdue && goal.remaining && goal.remaining > 0 && (
+                    <div className="alert alert-light py-2 px-3 mb-0 mt-2" style={{ backgroundColor: '#f0f4ff', borderColor: '#667eea' }}>
+                      <div className="small">
+                        <strong>💡 Required Savings:</strong>
+                        <div className="mt-1">
+                          <span className="badge bg-primary me-2">₹{(goal.requiredMonthlySavings || 0).toFixed(2)}/month</span>
+                          <span className="badge bg-secondary me-2">₹{(goal.requiredWeeklySavings || 0).toFixed(2)}/week</span>
+                          <span className="badge bg-secondary">₹{(goal.requiredDailySavings || 0).toFixed(2)}/day</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {goal.isOverdue && goal.remaining && goal.remaining > 0 && (
+                    <div className="alert alert-danger py-2 px-3 mb-0 mt-2">
+                      <small>⚠️ This goal is overdue. You still need ₹{goal.remaining.toFixed(2)} to complete it.</small>
+                    </div>
+                  )}
+
+                  {goal.remaining !== undefined && goal.remaining <= 0 && (
+                    <div className="alert alert-success py-2 px-3 mb-0 mt-2">
+                      <small>🎉 Congratulations! Goal completed!</small>
+                    </div>
+                  )}
                 </div>
               </div>
             ))

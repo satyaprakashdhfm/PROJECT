@@ -18,6 +18,10 @@ const goalSchema = new mongoose.Schema(
         current_amount:{
             type:Number,
             default:0
+        },
+        deadline:{
+            type:Date,
+            required:false
         }
     },
     {timestamps:true}

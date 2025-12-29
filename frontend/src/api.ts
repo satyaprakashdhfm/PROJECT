@@ -71,7 +71,7 @@ export const goalAPI = {
   getAll: () => 
     axiosInstance.get<{ goals: any[] }>('/goals'),
   
-  create: (goal: { goal: string; target_amount: number }) =>
+  create: (goal: { goal: string; target_amount: number; deadline?: string }) =>
     axiosInstance.post('/goals', goal),
   
   update: (id: string, incrementAmount: number) =>

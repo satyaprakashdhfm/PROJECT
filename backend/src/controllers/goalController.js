@@ -6,7 +6,7 @@ const Budget = require('../model/Budget')
 
 exports.createGoal = async(req,res) => {
     try{
-        const {goal, target_amount} = req.body
+        const {goal, target_amount, deadline} = req.body
 
         if(!goal || !target_amount){
             return res.status(400).json({error: "Goal name and target amount required"})
@@ -16,7 +16,8 @@ exports.createGoal = async(req,res) => {
             userId: req.user.id,
             goal,
             target_amount,
-            current_amount: 0
+            current_amount: 0,
+            deadline: deadline || null
         })
 
         res.status(201).json({
@@ -33,15 +34,44 @@ exports.getGoals = async(req,res) => {
     try{
         const goals = await Goal.find({userId: req.user.id})
 
-        // Calculate progress for each goal
+        // Calculate progress and deadline info for each goal
         const goalsWithProgress = goals.map(goal => {
             const progress = goal.current_amount ? 
                 ((goal.current_amount / parseFloat(goal.target_amount)) * 100).toFixed(2) : 0
             
+            const remaining = parseFloat(goal.target_amount) - (goal.current_amount || 0)
+            
+            // Calculate deadline-related info
+            let deadlineInfo = {}
+            if(goal.deadline){
+                const now = new Date()
+                const deadline = new Date(goal.deadline)
+                const daysRemaining = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24))
+                const monthsRemaining = daysRemaining / 30
+                const weeksRemaining = daysRemaining / 7
+                
+                // Calculate required savings
+                const requiredMonthlySavings = monthsRemaining > 0 ? remaining / monthsRemaining : 0
+                const requiredWeeklySavings = weeksRemaining > 0 ? remaining / weeksRemaining : 0
+                const requiredDailySavings = daysRemaining > 0 ? remaining / daysRemaining : 0
+                
+                deadlineInfo = {
+                    deadline: goal.deadline,
+                    daysRemaining,
+                    monthsRemaining: parseFloat(monthsRemaining.toFixed(1)),
+                    weeksRemaining: parseFloat(weeksRemaining.toFixed(1)),
+                    isOverdue: daysRemaining < 0,
+                    requiredMonthlySavings: parseFloat(requiredMonthlySavings.toFixed(2)),
+                    requiredWeeklySavings: parseFloat(requiredWeeklySavings.toFixed(2)),
+                    requiredDailySavings: parseFloat(requiredDailySavings.toFixed(2))
+                }
+            }
+            
             return {
                 ...goal.toObject(),
                 progress: `${progress}%`,
-                remaining: parseFloat(goal.target_amount) - (goal.current_amount || 0)
+                remaining,
+                ...deadlineInfo
             }
         })
 

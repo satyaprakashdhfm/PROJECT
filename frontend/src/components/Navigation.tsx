@@ -49,7 +49,7 @@ export default function Navigation() {
            style={{ 
              left: '250px',
              zIndex: 1001,
-             height: '60px',
+             height: '68px',
              borderBottom: '1px solid #e0e0e0'
            }}>
         <div className="d-flex align-items-center gap-3">
@@ -86,7 +86,7 @@ export default function Navigation() {
             <img 
               src="/src/public/icon.png" 
               alt="Logo" 
-              style={{ width: '40px', height: '20px', objectFit: 'contain' }}
+              style={{ width: '40px', height: '35px', objectFit: 'contain' }}
             />
             <span className="fw-bold fs-5" style={{ letterSpacing: '1px' }}>WEALTHWISE</span>
           </div>

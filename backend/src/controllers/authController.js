@@ -1,6 +1,7 @@
 const User = require('../model/User')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const crypto = require('crypto')
 
 exports.registerUser = async(req,res) => {
     
@@ -100,6 +101,77 @@ exports.resetPassword = async(req,res) => {
         const hashPassword = await bcrypt.hash(newPassword, 10)
         
         user.password = hashPassword
+        await user.save()
+        
+        res.status(200).json({message:"Password reset successfully"})
+    }
+    catch(error){
+        res.status(400).json({error:"Failed to reset password"})
+    }
+}
+
+// Forgot Password - Generate reset token and return link
+exports.forgotPassword = async(req,res) => {
+    const {email} = req.body
+    
+    try{
+        if(!email) return res.status(400).json({error:"Email is required"})
+        
+        const user = await User.findOne({email})
+        
+        if(!user) return res.status(404).json({error:"No user found with this email"})
+        
+        // Generate reset token
+        const resetToken = crypto.randomBytes(32).toString('hex')
+        
+        // Hash token and save to database
+        const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex')
+        
+        user.resetPasswordToken = hashedToken
+        user.resetPasswordExpiry = Date.now() + 600000
+        await user.save()
+        
+        // Create reset URL
+        const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`
+        
+        // Return the reset link in the response (displayed in UI)
+        res.status(200).json({
+            message:"Password reset link generated",
+            resetLink: resetUrl,
+            expiresIn: "1 hour"
+        })
+    }
+    catch(error){
+        res.status(500).json({error:"Failed to generate reset link"})
+    }
+}
+
+// Reset Password with Token
+exports.resetPasswordWithToken = async(req,res) => {
+    const {token} = req.params
+    const {newPassword} = req.body
+    
+    try{
+        if(!newPassword) return res.status(400).json({error:"New password is required"})
+        
+        if(newPassword.length < 6) return res.status(400).json({error:"Password must be at least 6 characters"})
+        
+        // Hash the token from URL to compare with database
+        const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+        
+        // Find user with valid token and not expired
+        const user = await User.findOne({
+            resetPasswordToken: hashedToken,
+            resetPasswordExpiry: {$gt: Date.now()}
+        })
+        
+        if(!user) return res.status(400).json({error:"Invalid or expired reset token"})
+        
+        // Update password
+        const hashPassword = await bcrypt.hash(newPassword, 10)
+        user.password = hashPassword
+        user.resetPasswordToken = null
+        user.resetPasswordExpiry = null
         await user.save()
         
         res.status(200).json({message:"Password reset successfully"})

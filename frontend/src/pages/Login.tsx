@@ -56,6 +56,16 @@ export default function Login() {
               />
             </div>
 
+            <div className="d-flex justify-content-end mb-3">
+              <span 
+                onClick={() => navigate('/forgot-password')} 
+                className="text-primary small" 
+                style={{ cursor: 'pointer', textDecoration: 'none' }}
+              >
+                Forgot Password?
+              </span>
+            </div>
+
             {error && (
               <div className="alert alert-danger" role="alert">
                 {error}

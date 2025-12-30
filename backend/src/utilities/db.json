@@ -19,19 +19,31 @@
   "budgets": [
     {
       "category": "Food",
-      "budget_amount": 10000
-    },
-    {
-      "category": "Travel",
       "budget_amount": 15000
     },
     {
-      "category": "Shopping",
+      "category": "Travel",
       "budget_amount": 20000
     },
     {
-      "category": "Bills",
+      "category": "Shopping",
       "budget_amount": 25000
+    },
+    {
+      "category": "Bills",
+      "budget_amount": 30000
+    },
+    {
+      "category": "Entertainment",
+      "budget_amount": 10000
+    },
+    {
+      "category": "Healthcare",
+      "budget_amount": 8000
+    },
+    {
+      "category": "Education",
+      "budget_amount": 12000
     },
     {
       "category": "Other",

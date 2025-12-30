@@ -19,18 +19,20 @@ export default function Expenses() {
 
   // Filter fields
   const [filterCategory, setFilterCategory] = useState('');
+  const [filterMerchant, setFilterMerchant] = useState('');
   const [filterStartDate, setFilterStartDate] = useState('');
   const [filterEndDate, setFilterEndDate] = useState('');
 
   useEffect(() => {
     loadExpenses();
-  }, [filterCategory, filterStartDate, filterEndDate]);
+  }, [filterCategory, filterMerchant, filterStartDate, filterEndDate]);
 
   const loadExpenses = async () => {
     try {
       // Build query string for filters
       const params = new URLSearchParams();
       if (filterCategory) params.append('category', filterCategory);
+      if (filterMerchant) params.append('merchant', filterMerchant);
       if (filterStartDate) params.append('startDate', filterStartDate);
       if (filterEndDate) params.append('endDate', filterEndDate);
       const queryString = params.toString();
@@ -99,6 +101,7 @@ export default function Expenses() {
 
   const clearFilters = () => {
     setFilterCategory('');
+    setFilterMerchant('');
     setFilterStartDate('');
     setFilterEndDate('');
   };
@@ -204,7 +207,7 @@ export default function Expenses() {
           <div className="card-body">
             <h5 className="card-title mb-3">🔍 Filters</h5>
             <div className="row g-3">
-              <div className="col-md-4">
+              <div className="col-md-3">
                 <label className="form-label">Category</label>
                 <select
                   className="form-select"
@@ -219,6 +222,20 @@ export default function Expenses() {
               </div>
 
               <div className="col-md-3">
+                <label className="form-label">Merchant</label>
+                <select
+                  className="form-select"
+                  value={filterMerchant}
+                  onChange={(e) => setFilterMerchant(e.target.value)}
+                >
+                  <option value="">All Merchants</option>
+                  {Array.from(new Set(expenses.map(e => e.merchant).filter(Boolean))).sort().map((merchant) => (
+                    <option key={merchant} value={merchant}>{merchant}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="col-md-2">
                 <label className="form-label">Start Date</label>
                 <input
                   type="date"
@@ -228,7 +245,7 @@ export default function Expenses() {
                 />
               </div>
 
-              <div className="col-md-3">
+              <div className="col-md-2">
                 <label className="form-label">End Date</label>
                 <input
                   type="date"
